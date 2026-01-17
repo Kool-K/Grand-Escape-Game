@@ -61,7 +61,8 @@ No build tools or servers required! This is a static web project.
 ├── script.js         # Game loop, Graph logic, AI, and Canvas rendering
 ├── /assets           # Character sprites and background images
 └── README.md         # You are here!
-``
+```
+
 ## ⚖️ Disclaimer & Credits
 This project is a non-profit fan creation made for educational purposes.
 
