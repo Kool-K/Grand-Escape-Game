@@ -2,7 +2,10 @@
 
 > **"Doraemooon! Help me!!"** > A strategic puzzle game where you help Nobita outsmart Gian, Suneo, and Sensei to reach safety.
 
-![Project Banner](assets/city_bg.png) ## 📖 About The Project
+
+## Play it here -> [Start Game](https://kool-k.github.io/Grand-Escape-Game/)
+![Project Banner](assets/city_bg.png) 
+## 📖 About The Project
 
 **Nobita's Great Escape** is a turn-based strategy puzzle game built with vanilla JavaScript and the HTML5 Canvas API. Unlike standard mazes, this game uses a **Non-Planar Graph** structure where paths cross over each other, creating complex "choke points" and traps.
 
