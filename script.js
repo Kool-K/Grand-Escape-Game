@@ -8,14 +8,21 @@ const turnCount = document.getElementById('turn-count');
 const dialogBox = document.getElementById('dialog-box');
 const dialogText = document.getElementById('dialog-text');
 
-//config
+// 1. CONFIG
 const LOGICAL_WIDTH = 950;
 const LOGICAL_HEIGHT = 650;
 
-// visuals
+// MOBILE DETECTION
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// VISUAL SETTINGS (Optimize for mobile)
 const VISUAL_RADIUS = 24; 
-const HIT_RADIUS = 45;    
+const HIT_RADIUS = 50; // Increased for fat thumbs
 const ANIMATION_SPEED = 0.15; 
+
+// Disable expensive shadows on mobile for performance
+const SHADOW_BLUR = isMobile ? 0 : 10;
+const SHADOW_OFFSET = isMobile ? 0 : 5;
 
 const COLORS = {
     nobita: "#f1c40f", 
@@ -39,7 +46,7 @@ sprites.suneo.src = "assets/suneo.png";
 sprites.sensei.src = "assets/sensei.png";
 sprites.doraemon.src = "assets/doraemon.png";
 
-// the maze/map nodes and their connections
+// 2. THE MAZE
 const nodes = [
     { id: 0, x: 80,  y: 80,  neighbors: [1, 5, 12] }, 
     { id: 1, x: 230, y: 70,  neighbors: [0, 2, 6] },
@@ -105,9 +112,12 @@ function initAnimation() {
     isAnimating = false;
 }
 
-// Ensure Canvas is High Res for all dev
+// Ensure Canvas is High Res but Cap it on Mobile for Speed
 function setupCanvas() {
-    const dpr = window.devicePixelRatio || 1;
+    let dpr = window.devicePixelRatio || 1;
+    // Cap DPR at 2 for mobile to prevent lag on high-res phones
+    if (isMobile && dpr > 2) dpr = 2;
+    
     canvas.width = LOGICAL_WIDTH * dpr;
     canvas.height = LOGICAL_HEIGHT * dpr;
     ctx.scale(dpr, dpr);
@@ -161,7 +171,6 @@ function lerp(start, end, t) {
 function updateAnimations() {
     let moving = false;
     
-    // Players/users/nobita
     const pTarget = nodes[playerNode];
     const distP = Math.sqrt((playerAnim.x - pTarget.x)**2 + (playerAnim.y - pTarget.y)**2);
     if (distP > 1) {
@@ -173,7 +182,6 @@ function updateAnimations() {
         playerAnim.y = pTarget.y;
     }
 
-    // Enemies/villains
     enemies.forEach(e => {
         const eTarget = nodes[e.currentNode];
         const distE = Math.sqrt((e.animX - eTarget.x)**2 + (e.animY - eTarget.y)**2);
@@ -190,15 +198,21 @@ function updateAnimations() {
     isAnimating = moving;
 }
 
-// drawing character image
 function drawSprite(x, y, img, color) {
     if (!img.complete) return;
     ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 10; ctx.shadowOffsetY = 5;
+    
+    if (!isMobile) { // Only draw shadows on desktop
+        ctx.shadowColor = "rgba(0,0,0,0.3)"; 
+        ctx.shadowBlur = SHADOW_BLUR; 
+        ctx.shadowOffsetY = SHADOW_OFFSET;
+    }
+
     ctx.beginPath(); ctx.arc(x, y, VISUAL_RADIUS + 4, 0, Math.PI * 2);
     ctx.fillStyle = "white"; ctx.fill(); 
     ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke();
-    ctx.shadowColor = "transparent";
+    
+    ctx.shadowColor = "transparent"; // Reset shadow for clipping
     ctx.beginPath(); ctx.arc(x, y, VISUAL_RADIUS, 0, Math.PI * 2); ctx.clip();
     ctx.drawImage(img, x - VISUAL_RADIUS, y - VISUAL_RADIUS, VISUAL_RADIUS * 2, VISUAL_RADIUS * 2);
     ctx.restore();
@@ -220,7 +234,7 @@ function draw() {
     }})});
     ctx.setLineDash([]);
 
-    // Highlights/ valid moves for players
+    // Highlights
     const validMoves = nodes[playerNode].neighbors;
     const pulseScale = 1 + Math.sin(pulseFrame * 0.1) * 0.1; 
     validMoves.forEach(neighborId => {
@@ -230,22 +244,22 @@ function draw() {
         ctx.fillStyle = COLORS.highlight; ctx.fill(); ctx.restore();
     });
 
-    // Nodes/circle
+    // Nodes
     nodes.forEach(n => {
         ctx.save();
         let r = VISUAL_RADIUS;
-        if (n.id === hoverNode) { r = VISUAL_RADIUS * 1.3; ctx.shadowColor = "rgba(0,0,0,0.4)"; ctx.shadowBlur = 15; }
-        else { ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 5; }
-        ctx.shadowOffsetY = 3;
+        if (n.id === hoverNode) { r = VISUAL_RADIUS * 1.3; }
+        
         ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
         ctx.fillStyle = COLORS.nodeFill; ctx.strokeStyle = (n.id === hoverNode) ? "#2c3e50" : COLORS.nodeBorder;
         ctx.lineWidth = (n.id === hoverNode) ? 4 : 3;
         ctx.fill(); ctx.stroke(); ctx.restore();
     });
 
-    // Goal of game
+    // Goal
     const goal = nodes[goalNode];
-    ctx.save(); ctx.shadowColor = COLORS.goal; ctx.shadowBlur = 15;
+    ctx.save(); 
+    if(!isMobile) { ctx.shadowColor = COLORS.goal; ctx.shadowBlur = 15; }
     ctx.beginPath(); ctx.arc(goal.x, goal.y, VISUAL_RADIUS + 5, 0, Math.PI * 2);
     ctx.fillStyle = "white"; ctx.fill();
     ctx.strokeStyle = "#34ace0"; ctx.lineWidth = 4; ctx.stroke();
@@ -269,10 +283,11 @@ function gameLoop() {
     } 
 }
 
-// --- Fixed input handling ---
+// --- FLAWLESS INPUT HANDLING FOR MOBILE ---
 function getMousePos(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    // Calculate scale relationship between visual size and logical size
+    
+    // Scale Logic: Map the visual DOM size to the internal 950x650
     const scaleX = LOGICAL_WIDTH / rect.width;
     const scaleY = LOGICAL_HEIGHT / rect.height;
     
@@ -286,13 +301,15 @@ function handleInput(clientX, clientY) {
     if (!isPlaying || isAnimating) return; 
 
     const pos = getMousePos(clientX, clientY);
+    
+    // Use the scaled coordinates to find the node
     let clicked = nodes.find(n => Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2) < HIT_RADIUS);
     
     if (clicked) {
         if (nodes[playerNode].neighbors.includes(clicked.id)) {
             handleMove(clicked.id);
         } else if (clicked.id !== playerNode) {
-            showDialog("Nobita", "Too far! I can only move to red circles.");
+            showDialog("Nobita", "Too far! Tap a red circle.");
         }
     }
 }
@@ -307,8 +324,10 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mousedown', (e) => handleInput(e.clientX, e.clientY));
+
+// PREVENT DEFAULT SCROLLING ON TOUCH
 canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // Stop scrolling
+    e.preventDefault(); 
     const touch = e.touches[0];
     handleInput(touch.clientX, touch.clientY);
 }, { passive: false });
@@ -332,7 +351,6 @@ function handleMove(targetId) {
 function showDialog(speaker, text) {
     dialogBox.classList.remove('hidden');
     dialogText.innerHTML = `<strong>${speaker}:</strong> ${text}`;
-    // Auto-close dialog after 2 seconds
     setTimeout(() => dialogBox.classList.add('hidden'), 2000);
 }
 
