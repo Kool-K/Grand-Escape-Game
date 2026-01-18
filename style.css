@@ -1,11 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
 
-/* --- GLOBAL RESET (Kills Zooming) --- */
 * { 
     box-sizing: border-box; 
     user-select: none; 
     -webkit-tap-highlight-color: transparent; 
-    touch-action: none; /* CRITICAL: Prevents browser zooming */
+    touch-action: none; /* prevents browser zooming */
 }
 
 :root {
@@ -28,7 +27,7 @@ html, body {
     overscroll-behavior: none;
 }
 
-/* --- MAIN CONTAINER --- */
+/* --- main game container --- */
 .game-container {
     position: relative;
     width: 100%;
@@ -41,7 +40,7 @@ html, body {
     /* frame behind map */
 }
 
-/* --- CANVAS WRAPPER --- */
+/* --- safe area around the canvas--- */
 .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -55,7 +54,7 @@ html, body {
     padding: 10px; /* Safe space */
 }
 
-/* --- CANVAS (THE MAP) --- */
+/* --- the map/canvas--- */
 canvas {
     display: block;
     aspect-ratio: 950 / 650;
@@ -132,7 +131,7 @@ footer p {
 
 footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
-/* --- OVERLAYS --- */
+/* --- Overlays --- */
 .overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -159,7 +158,7 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     width: 90%;
 }
 
-/* --- THE BAMBOO COPTER MODAL (FIXED) --- */
+/* --- Bamboo copter modal --- */
 #dialog-box {
     position: absolute; 
     top: 50%;
@@ -181,7 +180,7 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-/* --- TEXT STYLES --- */
+/* --- Text styles --- */
 .overlay-content h1 {
     color: #2c3e50;
     text-transform: uppercase;
@@ -217,18 +216,18 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
 .big-btn:active { transform: translateY(6px); box-shadow: none; }
 
-/* ========================================================= */
-/* --- LANDSCAPE MOBILE OPTIMIZATION (COMPACT LAYOUT) --- */
-/* ========================================================= */
+/* Landscape small height adjustments */
+
 @media screen and (max-height: 500px) and (orientation: landscape) {
     .overlay-content {
         flex-direction: row; /* Horizontal Layout */
         
-        /* FIX: Use fit-content to shrink wrap, limiting max width */
+        /* fit-content to shrink wrap, limits max width */
         width: auto;
         max-width: 650px; 
         
-        /* FIX: Center align items, remove 'space-between' gap */
+        /* Center align items, remove gap */
+        /*gap between text and button in the overlay modal*/
         justify-content: center;
         align-items: center;
         
@@ -238,11 +237,11 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
     .overlay-text-group {
         text-align: left;
-        flex: 0 1 auto; /* Allow text to be flexible but not expanding */
+        flex: 0 1 auto; /* Allows text to be flexible but not expanding */
         min-width: 200px;
     }
 
-    /* Shrink text for short screens */
+    /* Shrink text for small screens */
     .overlay-content h1 { font-size: 1.4rem; margin-bottom: 5px; }
     .instructions { font-size: 0.8rem; padding: 8px; margin: 0; line-height: 1.3; }
     .instructions p { margin: 2px 0; }
@@ -262,7 +261,7 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     footer { display: none; }
 }
 
-/* --- ROTATE OVERLAY --- */
+/* --- rotate phone overlay --- */
 #rotate-overlay {
     display: none;
     position: fixed;

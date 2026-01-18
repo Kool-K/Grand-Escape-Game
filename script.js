@@ -7,19 +7,19 @@ const endMessage = document.getElementById('end-message');
 const turnCount = document.getElementById('turn-count');
 const dialogBox = document.getElementById('dialog-box');
 
-// 1. CONFIG
+// config
 const LOGICAL_WIDTH = 950;
 const LOGICAL_HEIGHT = 650;
 
-// MOBILE DETECTION
+// mobile detection
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// VISUAL SETTINGS
+// visual settings
 const VISUAL_RADIUS = 24; 
 const HIT_RADIUS = 50; 
 const ANIMATION_SPEED = 0.15; 
 
-// Disable expensive shadows on mobile
+// Disable shadows on mobile
 const SHADOW_BLUR = isMobile ? 0 : 10;
 const SHADOW_OFFSET = isMobile ? 0 : 5;
 
@@ -45,7 +45,7 @@ sprites.suneo.src = "assets/suneo.png";
 sprites.sensei.src = "assets/sensei.png";
 sprites.doraemon.src = "assets/doraemon.png";
 
-// 2. THE MAZE
+// map/maze
 const nodes = [
     { id: 0, x: 80,  y: 80,  neighbors: [1, 5, 12] }, 
     { id: 1, x: 230, y: 70,  neighbors: [0, 2, 6] },
@@ -341,7 +341,7 @@ function handleMove(targetId) {
     if (killer) setTimeout(() => gameOver(false, killer), 500);
 }
 
-// --- NEW RICH MODAL FUNCTION ---
+// too far dialog
 function showTooFarDialog() {
     dialogBox.classList.remove('hidden');
     if (window.dialogTimer) clearTimeout(window.dialogTimer);
@@ -364,7 +364,7 @@ function showTooFarDialog() {
     }, 1300);
 }
 
-// Keep generic showDialog for safety
+// show dialog function can be used to show any dialog with speaker and text
 function showDialog(speaker, text) {
     dialogBox.classList.remove('hidden');
     dialogBox.innerHTML = `<p><strong>${speaker}:</strong> ${text}</p>`;
