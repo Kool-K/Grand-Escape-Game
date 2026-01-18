@@ -407,9 +407,9 @@ function gameOver(isWin, villain = null) {
             <div style="margin-bottom: 15px;">
                 <img src="assets/doraemon.png" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #34ace0; background: white;">
             </div>
-            Nobita reached Doraemon!<br><br>
-            Doraemon gave you the: <br>
-            <strong style="color:#e67e22; font-size:1.4rem; display:block; margin-top:10px;">${randomGadget}!</strong>
+            You reached Doraemon!<br>
+            Doraemon: Here's the <br>
+            <strong style="color:#e67e22; font-size:1.4rem; display:block; margin-top:10px;">${randomGadget}!</strong>. Now Run!
         `;
     } else { 
         endTitle.innerText = "CAUGHT!"; 
