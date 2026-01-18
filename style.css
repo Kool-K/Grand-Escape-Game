@@ -37,7 +37,8 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: #2c3e50; /* Dark frame behind the map */
+    background: #34ace0; 
+    /* frame behind map */
 }
 
 /* --- CANVAS WRAPPER --- */
