@@ -39,11 +39,11 @@ const COLORS = {
 const sprites = {
     nobita: new Image(), gian: new Image(), suneo: new Image(), sensei: new Image(), doraemon: new Image()
 };
-sprites.nobita.src = "assets/nobita.png";
-sprites.gian.src = "assets/gian.png";
-sprites.suneo.src = "assets/suneo.png";
-sprites.sensei.src = "assets/sensei.png";
-sprites.doraemon.src = "assets/doraemon.png";
+sprites.nobita.src = "assets/nobita.webp";
+sprites.gian.src = "assets/gian.webp";
+sprites.suneo.src = "assets/suneo.webp";
+sprites.sensei.src = "assets/sensei.webp";
+sprites.doraemon.src = "assets/doraemon.webp";
 
 // map/maze
 const nodes = [
@@ -351,7 +351,7 @@ function showTooFarDialog() {
     dialogBox.innerHTML = `
         <h1 style="margin: 0 0 10px 0; color: ${warnColor}; font-size: 1.8rem; text-transform: uppercase;">TOO FAR!</h1>
         <div style="margin-bottom: 15px;">
-            <img src="assets/bamboo_copter.png" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid ${warnColor}; background: white; padding: 5px; object-fit: contain;">
+            <img src="assets/bamboo_copter.webp" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid ${warnColor}; background: white; padding: 5px; object-fit: contain;">
         </div>
         <p style="margin:0; font-size:1.1rem; color:#2c3e50; font-weight: 700; line-height: 1.4;">
             Tap a red circle!<br>
@@ -405,7 +405,7 @@ function gameOver(isWin, villain = null) {
         
         htmlContent = `
             <div style="margin-bottom: 15px;">
-                <img src="assets/doraemon.png" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #34ace0; background: white;">
+                <img src="assets/doraemon.webp" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #34ace0; background: white;">
             </div>
             You reached Doraemon!<br>
             Doraemon: Here's the <br>
@@ -415,7 +415,7 @@ function gameOver(isWin, villain = null) {
         endTitle.innerText = "CAUGHT!"; 
         endTitle.style.color = COLORS.gian; 
         
-        let villainImg = `assets/${villain.type}.png`;
+        let villainImg = `assets/${villain.type}.webp`;
         let borderColor = COLORS[villain.type] || "#000";
         
         htmlContent = `
@@ -435,4 +435,20 @@ window.closeDialog = closeDialog;
 setupCanvas();
 window.addEventListener('resize', () => { setupCanvas(); draw(); });
 initAnimation();
-sprites.nobita.onload = draw;
+
+
+let imagesLoaded = 0;
+const totalImages = Object.keys(sprites).length;
+
+function checkAllImagesLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        // Only draw once everyone is ready
+        draw(); 
+    }
+}
+
+// Attach checker to every sprite
+for (let key in sprites) {
+    sprites[key].onload = checkAllImagesLoaded;
+}
