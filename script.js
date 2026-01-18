@@ -6,7 +6,6 @@ const endTitle = document.getElementById('end-title');
 const endMessage = document.getElementById('end-message');
 const turnCount = document.getElementById('turn-count');
 const dialogBox = document.getElementById('dialog-box');
-const dialogText = document.getElementById('dialog-text');
 
 // 1. CONFIG
 const LOGICAL_WIDTH = 950;
@@ -15,12 +14,12 @@ const LOGICAL_HEIGHT = 650;
 // MOBILE DETECTION
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// VISUAL SETTINGS (Optimize for mobile)
+// VISUAL SETTINGS
 const VISUAL_RADIUS = 24; 
-const HIT_RADIUS = 50; // Increased for fat thumbs
+const HIT_RADIUS = 50; 
 const ANIMATION_SPEED = 0.15; 
 
-// Disable expensive shadows on mobile for performance
+// Disable expensive shadows on mobile
 const SHADOW_BLUR = isMobile ? 0 : 10;
 const SHADOW_OFFSET = isMobile ? 0 : 5;
 
@@ -112,15 +111,16 @@ function initAnimation() {
     isAnimating = false;
 }
 
-// Ensure Canvas is High Res but Cap it on Mobile for Speed
 function setupCanvas() {
     let dpr = window.devicePixelRatio || 1;
-    // Cap DPR at 2 for mobile to prevent lag on high-res phones
-    if (isMobile && dpr > 2) dpr = 2;
+    if (isMobile && dpr > 2) dpr = 2; 
     
     canvas.width = LOGICAL_WIDTH * dpr;
     canvas.height = LOGICAL_HEIGHT * dpr;
+    
+    ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.scale(dpr, dpr);
+    
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 }
@@ -170,7 +170,6 @@ function lerp(start, end, t) {
 
 function updateAnimations() {
     let moving = false;
-    
     const pTarget = nodes[playerNode];
     const distP = Math.sqrt((playerAnim.x - pTarget.x)**2 + (playerAnim.y - pTarget.y)**2);
     if (distP > 1) {
@@ -202,7 +201,7 @@ function drawSprite(x, y, img, color) {
     if (!img.complete) return;
     ctx.save();
     
-    if (!isMobile) { // Only draw shadows on desktop
+    if (!isMobile) { 
         ctx.shadowColor = "rgba(0,0,0,0.3)"; 
         ctx.shadowBlur = SHADOW_BLUR; 
         ctx.shadowOffsetY = SHADOW_OFFSET;
@@ -212,7 +211,7 @@ function drawSprite(x, y, img, color) {
     ctx.fillStyle = "white"; ctx.fill(); 
     ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke();
     
-    ctx.shadowColor = "transparent"; // Reset shadow for clipping
+    ctx.shadowColor = "transparent"; 
     ctx.beginPath(); ctx.arc(x, y, VISUAL_RADIUS, 0, Math.PI * 2); ctx.clip();
     ctx.drawImage(img, x - VISUAL_RADIUS, y - VISUAL_RADIUS, VISUAL_RADIUS * 2, VISUAL_RADIUS * 2);
     ctx.restore();
@@ -283,14 +282,11 @@ function gameLoop() {
     } 
 }
 
-// --- FLAWLESS INPUT HANDLING FOR MOBILE ---
+// --- INPUT HANDLING ---
 function getMousePos(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    
-    // Scale Logic: Map the visual DOM size to the internal 950x650
     const scaleX = LOGICAL_WIDTH / rect.width;
     const scaleY = LOGICAL_HEIGHT / rect.height;
-    
     return {
         x: (clientX - rect.left) * scaleX,
         y: (clientY - rect.top) * scaleY
@@ -301,15 +297,13 @@ function handleInput(clientX, clientY) {
     if (!isPlaying || isAnimating) return; 
 
     const pos = getMousePos(clientX, clientY);
-    
-    // Use the scaled coordinates to find the node
     let clicked = nodes.find(n => Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2) < HIT_RADIUS);
     
     if (clicked) {
         if (nodes[playerNode].neighbors.includes(clicked.id)) {
             handleMove(clicked.id);
         } else if (clicked.id !== playerNode) {
-            showDialog("Nobita", "Too far! Tap a red circle.");
+            showTooFarDialog();
         }
     }
 }
@@ -325,7 +319,6 @@ canvas.addEventListener('mousemove', (e) => {
 
 canvas.addEventListener('mousedown', (e) => handleInput(e.clientX, e.clientY));
 
-// PREVENT DEFAULT SCROLLING ON TOUCH
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault(); 
     const touch = e.touches[0];
@@ -348,10 +341,35 @@ function handleMove(targetId) {
     if (killer) setTimeout(() => gameOver(false, killer), 500);
 }
 
+// --- NEW RICH MODAL FUNCTION ---
+function showTooFarDialog() {
+    dialogBox.classList.remove('hidden');
+    if (window.dialogTimer) clearTimeout(window.dialogTimer);
+
+    const warnColor = COLORS.gian; 
+
+    dialogBox.innerHTML = `
+        <h1 style="margin: 0 0 10px 0; color: ${warnColor}; font-size: 1.8rem; text-transform: uppercase;">TOO FAR!</h1>
+        <div style="margin-bottom: 15px;">
+            <img src="assets/bamboo_copter.png" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid ${warnColor}; background: white; padding: 5px; object-fit: contain;">
+        </div>
+        <p style="margin:0; font-size:1.1rem; color:#2c3e50; font-weight: 700; line-height: 1.4;">
+            Tap a red circle!<br>
+            <span style="font-weight:normal; font-style:italic; font-size: 1rem;">"I will need a bamboo copter to go there!"</span>
+        </p>
+    `;
+
+    window.dialogTimer = setTimeout(() => {
+        dialogBox.classList.add('hidden');
+    }, 1300);
+}
+
+// Keep generic showDialog for safety
 function showDialog(speaker, text) {
     dialogBox.classList.remove('hidden');
-    dialogText.innerHTML = `<strong>${speaker}:</strong> ${text}`;
-    setTimeout(() => dialogBox.classList.add('hidden'), 2000);
+    dialogBox.innerHTML = `<p><strong>${speaker}:</strong> ${text}</p>`;
+    if (window.dialogTimer) clearTimeout(window.dialogTimer);
+    window.dialogTimer = setTimeout(() => { dialogBox.classList.add('hidden'); }, 1500);
 }
 
 function closeDialog() { dialogBox.classList.add('hidden'); }

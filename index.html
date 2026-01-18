@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Nobita's Great Escape</title>
     <link rel="icon" href="assets/doraemon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
@@ -33,12 +33,13 @@
 
         <div id="start-screen" class="overlay">
             <div class="overlay-content">
-                <h1>Nobita's Escape</h1>
-                <p>Help Nobita reach <span style="color:#f39c12; font-weight:bold;">Doraemon</span>!</p>
-                <div class="instructions">
-                    <p>🏃 Move 1 step at a time.</p>
-                    <p>👹 Avoid Gian, Suneo, and Sensei.</p>
-                    <p>🧠 Trick them by looping!</p>
+                <div class="overlay-text-group">
+                    <h1>Nobita's Escape</h1>
+                    <div class="instructions">
+                        <p>🏃 Move 1 step at a time.</p>
+                        <p>👹 Avoid Gian, Suneo, and Sensei.</p>
+                        <p>🧠 Trick them by looping!</p>
+                    </div>
                 </div>
                 <button class="big-btn" onclick="startGame()">PLAY NOW</button>
             </div>
@@ -46,8 +47,10 @@
 
         <div id="end-screen" class="overlay hidden">
             <div class="overlay-content">
-                <h1 id="end-title">Game Over</h1>
-                <p id="end-message"></p>
+                <div class="overlay-text-group">
+                    <h1 id="end-title">Game Over</h1>
+                    <p id="end-message"></p>
+                </div>
                 <button class="big-btn" onclick="startGame()">PLAY AGAIN</button>
             </div>
         </div>
