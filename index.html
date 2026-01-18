@@ -1,56 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nobita's Great Escape</title>
-        <link rel="icon" href="assets/doraemon.png" type="image/png">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="game-container">
-            <canvas id="gameCanvas"></canvas>
-            <div class="status-bar">
-                <div class="turn-badge">
-                    Turn:
-                    <span id="turn-count">0</span>
-                </div>
-                <button onclick="resetLevel()">↻ Restart</button>
-            </div>
-            <div id="start-screen" class="overlay">
-                <div class="overlay-content">
-                    <h1>Nobita's Escape</h1>
-                    <p>
-                        Help Nobita reach
-                        <span style="color:#f39c12; font-weight:bold;">Doraemon</span>
-                        !
-                    </p>
-                    <div class="instructions">
-                        <p>🏃 Move 1 step at a time along roads.</p>
-                        <p>👹 Avoid Gian, Suneo, and Sensei.</p>
-                        <p>🧠 Trick them by using the loops!</p>
-                    </div>
-                    <button class="big-btn" onclick="startGame()">PLAY NOW</button>
-                </div>
-            </div>
-            <div id="end-screen" class="overlay hidden">
-                <div class="overlay-content">
-                    <h1 id="end-title">Game Over</h1>
-                    <p id="end-message"></p>
-                    <button class="big-btn" onclick="startGame()">PLAY AGAIN</button>
-                </div>
-            </div>
-            <div id="dialog-box" class="hidden">
-                <p id="dialog-text">...</p>
-                <button onclick="closeDialog()">OK</button>
-            </div>
-            <footer>
-                <p>
-                    Made by
-                    <a href="https://kool-k.github.io/Ketaki_Kulkarni_Portfolio/" target="_blank" rel="noopener noreferrer">Ketaki Kulkarni</a>
-                </p>
-            </footer>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nobita's Great Escape</title>
+    <link rel="icon" href="assets/doraemon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="rotate-overlay">
+        <div class="rotate-content">
+            <h1>📱 Rotate Your Phone</h1>
+            <p>This game is best played in <strong>Landscape Mode</strong>.</p>
+            <div class="rotate-icon">↻</div>
         </div>
-        <script src="script.js"></script>
-    </body>
+    </div>
+
+    <div class="game-container">
+        <div class="status-bar">
+            <div class="turn-badge">Turn: <span id="turn-count">0</span></div>
+            <button onclick="resetLevel()">↻ Restart</button>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <footer>
+            <p>Made by <a href="https://github.com/Kool-K" target="_blank">Ketaki Kulkarni</a></p>
+        </footer>
+
+        <div id="start-screen" class="overlay">
+            <div class="overlay-content">
+                <h1>Nobita's Escape</h1>
+                <p>Help Nobita reach <span style="color:#f39c12; font-weight:bold;">Doraemon</span>!</p>
+                <div class="instructions">
+                    <p>🏃 Move 1 step at a time.</p>
+                    <p>👹 Avoid Gian, Suneo, and Sensei.</p>
+                    <p>🧠 Trick them by looping!</p>
+                </div>
+                <button class="big-btn" onclick="startGame()">PLAY NOW</button>
+            </div>
+        </div>
+
+        <div id="end-screen" class="overlay hidden">
+            <div class="overlay-content">
+                <h1 id="end-title">Game Over</h1>
+                <p id="end-message"></p>
+                <button class="big-btn" onclick="startGame()">PLAY AGAIN</button>
+            </div>
+        </div>
+
+        <div id="dialog-box" class="hidden">
+            <p id="dialog-text">...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
