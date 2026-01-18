@@ -409,7 +409,7 @@ function gameOver(isWin, villain = null) {
             </div>
             You reached Doraemon!<br>
             Doraemon: Here's the <br>
-            <strong style="color:#e67e22; font-size:1.4rem; display:block; margin-top:10px;">${randomGadget}!</strong>. Now Run!
+            <strong style="color:#e67e22; font-size:1.2rem; display:block; margin-top:4px;">${randomGadget}!</strong>Now Run!
         `;
     } else { 
         endTitle.innerText = "CAUGHT!"; 

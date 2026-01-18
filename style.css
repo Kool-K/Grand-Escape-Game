@@ -57,18 +57,13 @@ html, body {
 /* --- CANVAS (THE MAP) --- */
 canvas {
     display: block;
-    /* FIX: Enforce Aspect Ratio so clicks align perfectly */
     aspect-ratio: 950 / 650;
-    
-    /* FIX: Never stretch, just fit */
     width: auto;
     height: auto;
     max-width: 100%;
     max-height: 100%;
-    
-    /* Visuals */
     border-radius: 16px;
-    background-image: url('assets/city_bg.png'); /* CHECK THIS FILENAME */
+    background-image: url('assets/city_bg.png'); 
     background-size: cover;
     background-position: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -165,22 +160,18 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
 /* --- THE BAMBOO COPTER MODAL (FIXED) --- */
 #dialog-box {
-    position: absolute; /* Float freely */
+    position: absolute; 
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
     padding: 25px;
     border-radius: 24px;
-    
-    /* STYLE FIX: Thick border and shadow */
     border: 5px solid #2c3e50;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    
     text-align: center;
     min-width: 300px;
-    z-index: 200; /* Must be highest */
-    
+    z-index: 200; 
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -225,31 +216,48 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
 .big-btn:active { transform: translateY(6px); box-shadow: none; }
 
-/* --- LANDSCAPE MOBILE OPTIMIZATION --- */
+/* ========================================================= */
+/* --- LANDSCAPE MOBILE OPTIMIZATION (COMPACT LAYOUT) --- */
+/* ========================================================= */
 @media screen and (max-height: 500px) and (orientation: landscape) {
     .overlay-content {
-        flex-direction: row; 
-        max-width: 750px;
-        width: 95%;
-        padding: 15px 25px;
-        justify-content: space-between;
-        gap: 20px;
+        flex-direction: row; /* Horizontal Layout */
+        
+        /* FIX: Use fit-content to shrink wrap, limiting max width */
+        width: auto;
+        max-width: 650px; 
+        
+        /* FIX: Center align items, remove 'space-between' gap */
+        justify-content: center;
+        align-items: center;
+        
+        padding: 15px 30px;
+        gap: 30px; /* Clean fixed spacing between Text and Button */
     }
 
-    .overlay-text-group { text-align: left; flex: 1; }
-    .overlay-content h1 { font-size: 1.5rem; margin-bottom: 5px; }
+    .overlay-text-group {
+        text-align: left;
+        flex: 0 1 auto; /* Allow text to be flexible but not expanding */
+        min-width: 200px;
+    }
+
+    /* Shrink text for short screens */
+    .overlay-content h1 { font-size: 1.4rem; margin-bottom: 5px; }
     .instructions { font-size: 0.8rem; padding: 8px; margin: 0; line-height: 1.3; }
     .instructions p { margin: 2px 0; }
     
+    /* Button placement - No margins, just flex gap */
     .big-btn {
         width: auto !important;
-        padding: 10px 30px !important;
+        padding: 12px 30px !important;
         height: fit-content;
         font-size: 1.1rem;
         margin: 0 !important;
         white-space: nowrap;
+        flex-shrink: 0;
     }
     
+    /* Hide footer on small landscape to save view */
     footer { display: none; }
 }
 
