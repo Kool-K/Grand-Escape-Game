@@ -71,14 +71,21 @@ html, body {
 /* Mobile landscape optimization - reduce padding to maximize canvas space */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .canvas-wrapper {
-        padding: 45px 10px 30px 10px;
+        padding: 35px 10px 25px 10px;
     }
 }
 
 /* Extra aggressive optimization for smaller phones */
 @media screen and (max-height: 500px) and (orientation: landscape) {
     .canvas-wrapper {
-        padding: 40px 8px 25px 8px;
+        padding: 32px 8px 20px 8px;
+    }
+}
+
+/* Ultra-compact mode for very small phones */
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    .canvas-wrapper {
+        padding: 28px 5px 15px 5px;
     }
 }
 
@@ -111,13 +118,24 @@ canvas {
 /* Mobile landscape - compact status bar */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .status-bar {
-        top: 5px;
-        padding: 0 10px;
+        top: 3px;
+        padding: 0 8px;
     }
     
     /* Override inline gap style for compact mobile view */
     .status-bar > div {
-        gap: 6px !important;
+        gap: 5px !important;
+    }
+}
+
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    .status-bar {
+        top: 2px;
+        padding: 0 5px;
+    }
+    
+    .status-bar > div {
+        gap: 4px !important;
     }
 }
 
@@ -135,8 +153,8 @@ canvas {
 /* Mobile landscape - smaller badges */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .turn-badge {
-        padding: 5px 10px;
-        font-size: 0.8rem;
+        padding: 4px 8px;
+        font-size: 0.75rem;
         border: 2px solid #2c3e50;
         box-shadow: 0 2px 0 rgba(0,0,0,0.2);
     }
@@ -144,10 +162,19 @@ canvas {
 
 @media screen and (max-height: 500px) and (orientation: landscape) {
     .turn-badge {
-        padding: 4px 8px;
-        font-size: 0.75rem;
+        padding: 3px 6px;
+        font-size: 0.7rem;
         border: 1px solid #2c3e50;
-        box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+}
+
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    .turn-badge {
+        padding: 2px 5px;
+        font-size: 0.65rem;
+        border: 1px solid #2c3e50;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.2);
     }
 }
 
@@ -169,16 +196,16 @@ canvas {
 /* Mobile landscape - smaller buttons */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .status-bar button {
-        padding: 5px 10px;
-        font-size: 0.8rem;
+        padding: 4px 8px;
+        font-size: 0.75rem;
         border: 2px solid #2c3e50;
         box-shadow: 0 2px 0 #2c3e50;
     }
     
     .status-bar button#help-btn {
-        width: 32px;
-        padding: 5px 0;
-        font-size: 0.95rem;
+        width: 28px;
+        padding: 4px 0;
+        font-size: 0.9rem;
     }
     
     .status-bar button:active { 
@@ -188,16 +215,35 @@ canvas {
 
 @media screen and (max-height: 500px) and (orientation: landscape) {
     .status-bar button {
-        padding: 4px 8px;
-        font-size: 0.75rem;
+        padding: 3px 6px;
+        font-size: 0.7rem;
         border: 1px solid #2c3e50;
-        box-shadow: 0 2px 0 #2c3e50;
+        box-shadow: 0 1px 0 #2c3e50;
     }
     
     .status-bar button#help-btn {
-        width: 28px;
-        padding: 4px 0;
-        font-size: 0.9rem;
+        width: 26px;
+        padding: 3px 0;
+        font-size: 0.85rem;
+    }
+    
+    .status-bar button:active { 
+        transform: translateY(1px); 
+    }
+}
+
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    .status-bar button {
+        padding: 2px 5px;
+        font-size: 0.65rem;
+        border: 1px solid #2c3e50;
+        box-shadow: 0 1px 0 #2c3e50;
+    }
+    
+    .status-bar button#help-btn {
+        width: 24px;
+        padding: 2px 0;
+        font-size: 0.8rem;
     }
     
     .status-bar button:active { 
@@ -231,23 +277,23 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Mobile landscape - smaller footer */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     footer {
-        bottom: 3px;
-    }
-    
-    footer p {
-        padding: 2px 8px;
-        font-size: 0.65rem;
-    }
-}
-
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    footer {
         bottom: 2px;
     }
     
     footer p {
         padding: 2px 6px;
         font-size: 0.6rem;
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    footer {
+        bottom: 1px;
+    }
+    
+    footer p {
+        padding: 1px 5px;
+        font-size: 0.55rem;
     }
 }
 
@@ -281,35 +327,68 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Mobile landscape - compact overlay content */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .overlay-content {
-        padding: 15px 20px;
+        padding: 12px 15px;
         border-width: 3px;
-        gap: 10px;
+        gap: 8px;
         max-width: 500px;
     }
     
     .overlay-content h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
     
     .instructions {
-        padding: 10px;
-        font-size: 0.85rem;
+        padding: 8px;
+        font-size: 0.8rem;
         line-height: 1.3;
     }
     
     .instructions p {
-        margin: 3px 0;
+        margin: 2px 0;
     }
     
     .big-btn {
-        font-size: 1.1rem;
-        padding: 10px 0;
+        font-size: 1rem;
+        padding: 8px 0;
         border-width: 3px;
-        box-shadow: 0 4px 0 #2c3e50;
+        box-shadow: 0 3px 0 #2c3e50;
     }
     
     .big-btn:active { 
-        transform: translateY(4px); 
+        transform: translateY(3px); 
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .overlay-content {
+        padding: 10px 12px;
+        border-width: 2px;
+        gap: 6px;
+    }
+    
+    .overlay-content h1 {
+        font-size: 1.3rem;
+    }
+    
+    .instructions {
+        padding: 6px;
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+    
+    .instructions p {
+        margin: 1px 0;
+    }
+    
+    .big-btn {
+        font-size: 0.95rem;
+        padding: 7px 0;
+        border-width: 2px;
+        box-shadow: 0 2px 0 #2c3e50;
+    }
+    
+    .big-btn:active { 
+        transform: translateY(2px); 
     }
 }
 
@@ -333,31 +412,8 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Mobile landscape - compact dialog */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     #dialog-box {
-        padding: 12px;
-        border: 3px solid #2c3e50;
-        min-width: 220px;
-    }
-    
-    #dialog-box h1 {
-        font-size: 1.2rem;
-        margin: 0 0 6px 0;
-    }
-    
-    #dialog-box img {
-        width: 50px;
-        height: 50px;
-        border-width: 3px;
-    }
-    
-    #dialog-box p {
-        font-size: 0.85rem;
-    }
-}
-
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    #dialog-box {
         padding: 10px;
-        border: 2px solid #2c3e50;
+        border: 3px solid #2c3e50;
         min-width: 200px;
     }
     
@@ -369,11 +425,34 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     #dialog-box img {
         width: 45px;
         height: 45px;
-        border-width: 2px;
+        border-width: 3px;
     }
     
     #dialog-box p {
         font-size: 0.8rem;
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #dialog-box {
+        padding: 8px;
+        border: 2px solid #2c3e50;
+        min-width: 180px;
+    }
+    
+    #dialog-box h1 {
+        font-size: 1rem;
+        margin: 0 0 4px 0;
+    }
+    
+    #dialog-box img {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+    
+    #dialog-box p {
+        font-size: 0.75rem;
     }
 }
 
