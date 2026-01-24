@@ -115,6 +115,7 @@ canvas {
         padding: 0 10px;
     }
     
+    /* Override inline gap style for compact mobile view */
     .status-bar > div {
         gap: 6px !important;
     }
