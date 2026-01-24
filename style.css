@@ -71,7 +71,14 @@ html, body {
 /* Mobile landscape optimization - reduce padding to maximize canvas space */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .canvas-wrapper {
-        padding: 50px 15px 40px 15px;
+        padding: 45px 10px 30px 10px;
+    }
+}
+
+/* Extra aggressive optimization for smaller phones */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .canvas-wrapper {
+        padding: 40px 8px 25px 8px;
     }
 }
 
@@ -104,8 +111,13 @@ canvas {
 /* Mobile landscape - compact status bar */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .status-bar {
-        top: 8px;
-        padding: 0 15px;
+        top: 5px;
+        padding: 0 10px;
+    }
+    
+    /* Override inline gap style for compact mobile view */
+    .status-bar > div {
+        gap: 6px !important;
     }
 }
 
@@ -123,10 +135,19 @@ canvas {
 /* Mobile landscape - smaller badges */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .turn-badge {
-        padding: 6px 12px;
-        font-size: 0.85rem;
+        padding: 5px 10px;
+        font-size: 0.8rem;
         border: 2px solid #2c3e50;
-        box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .turn-badge {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        border: 1px solid #2c3e50;
+        box-shadow: 0 2px 0 rgba(0,0,0,0.2);
     }
 }
 
@@ -148,20 +169,39 @@ canvas {
 /* Mobile landscape - smaller buttons */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     .status-bar button {
-        padding: 6px 12px;
-        font-size: 0.85rem;
+        padding: 5px 10px;
+        font-size: 0.8rem;
         border: 2px solid #2c3e50;
-        box-shadow: 0 3px 0 #2c3e50;
+        box-shadow: 0 2px 0 #2c3e50;
     }
     
     .status-bar button#help-btn {
-        width: 35px;
-        padding: 6px 0;
-        font-size: 1rem;
+        width: 32px;
+        padding: 5px 0;
+        font-size: 0.95rem;
     }
     
     .status-bar button:active { 
         transform: translateY(2px); 
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .status-bar button {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        border: 1px solid #2c3e50;
+        box-shadow: 0 2px 0 #2c3e50;
+    }
+    
+    .status-bar button#help-btn {
+        width: 28px;
+        padding: 4px 0;
+        font-size: 0.9rem;
+    }
+    
+    .status-bar button:active { 
+        transform: translateY(1px); 
     }
 }
 
@@ -191,12 +231,23 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Mobile landscape - smaller footer */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     footer {
-        bottom: 5px;
+        bottom: 3px;
     }
     
     footer p {
-        padding: 3px 10px;
-        font-size: 0.7rem;
+        padding: 2px 8px;
+        font-size: 0.65rem;
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    footer {
+        bottom: 2px;
+    }
+    
+    footer p {
+        padding: 2px 6px;
+        font-size: 0.6rem;
     }
 }
 
@@ -227,6 +278,41 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     width: 90%;
 }
 
+/* Mobile landscape - compact overlay content */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    .overlay-content {
+        padding: 15px 20px;
+        border-width: 3px;
+        gap: 10px;
+        max-width: 500px;
+    }
+    
+    .overlay-content h1 {
+        font-size: 1.6rem;
+    }
+    
+    .instructions {
+        padding: 10px;
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+    
+    .instructions p {
+        margin: 3px 0;
+    }
+    
+    .big-btn {
+        font-size: 1.1rem;
+        padding: 10px 0;
+        border-width: 3px;
+        box-shadow: 0 4px 0 #2c3e50;
+    }
+    
+    .big-btn:active { 
+        transform: translateY(4px); 
+    }
+}
+
 /* --- Bamboo copter modal --- */
 #dialog-box {
     position: absolute; 
@@ -247,24 +333,47 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Mobile landscape - compact dialog */
 @media screen and (max-height: 700px) and (orientation: landscape) {
     #dialog-box {
-        padding: 15px;
+        padding: 12px;
         border: 3px solid #2c3e50;
-        min-width: 250px;
+        min-width: 220px;
     }
     
     #dialog-box h1 {
-        font-size: 1.3rem;
-        margin: 0 0 8px 0;
+        font-size: 1.2rem;
+        margin: 0 0 6px 0;
     }
     
     #dialog-box img {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-width: 3px;
     }
     
     #dialog-box p {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #dialog-box {
+        padding: 10px;
+        border: 2px solid #2c3e50;
+        min-width: 200px;
+    }
+    
+    #dialog-box h1 {
+        font-size: 1.1rem;
+        margin: 0 0 5px 0;
+    }
+    
+    #dialog-box img {
+        width: 45px;
+        height: 45px;
+        border-width: 2px;
+    }
+    
+    #dialog-box p {
+        font-size: 0.8rem;
     }
 }
 
@@ -311,48 +420,47 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 
 /* Landscape small height adjustments */
 
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    /* Extra compact canvas wrapper for very small screens */
-    .canvas-wrapper {
-        padding: 45px 10px 5px 10px;
-    }
-    
-    /* Hide footer on small landscape to save view */
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    /* Hide footer on very small landscape to maximize game view */
     footer { display: none; }
     
     .overlay-content {
-        flex-direction: row; /* Horizontal Layout */
-        
-        /* fit-content to shrink wrap, limits max width */
+        flex-direction: row;
         width: auto;
-        max-width: 650px; 
-        
-        /* Center align items, remove gap */
-        /*gap between text and button in the overlay modal*/
+        max-width: 650px;
         justify-content: center;
         align-items: center;
-        
-        padding: 15px 30px;
-        gap: 30px; /* Clean fixed spacing between Text and Button */
+        padding: 12px 25px;
+        gap: 25px;
     }
 
     .overlay-text-group {
         text-align: left;
-        flex: 0 1 auto; /* Allows text to be flexible but not expanding */
-        min-width: 200px;
+        flex: 0 1 auto;
+        min-width: 180px;
     }
 
-    /* Shrink text for small screens */
-    .overlay-content h1 { font-size: 1.4rem; margin-bottom: 5px; }
-    .instructions { font-size: 0.8rem; padding: 8px; margin: 0; line-height: 1.3; }
-    .instructions p { margin: 2px 0; }
+    .overlay-content h1 { 
+        font-size: 1.3rem; 
+        margin-bottom: 5px; 
+    }
     
-    /* Button placement - No margins, just flex gap */
+    .instructions { 
+        font-size: 0.75rem; 
+        padding: 8px; 
+        margin: 0; 
+        line-height: 1.2; 
+    }
+    
+    .instructions p { 
+        margin: 2px 0; 
+    }
+    
     .overlay-content .big-btn {
         width: auto;
-        padding: 12px 30px;
+        padding: 10px 25px;
         height: fit-content;
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin: 0;
         white-space: nowrap;
         flex-shrink: 0;
