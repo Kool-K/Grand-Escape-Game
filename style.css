@@ -245,6 +245,10 @@ canvas {
         padding: 2px 0;
         font-size: 0.8rem;
     }
+    
+    .status-bar button:active { 
+        transform: translateY(1px); 
+    }
 }
 
 /* --- FOOTER (Floating) --- */
