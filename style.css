@@ -154,10 +154,10 @@ canvas {
         box-shadow: 0 3px 0 #2c3e50;
     }
     
-    #help-btn {
-        width: 35px !important;
-        padding: 6px 0 !important;
-        font-size: 1rem !important;
+    .status-bar button#help-btn {
+        width: 35px;
+        padding: 6px 0;
+        font-size: 1rem;
     }
     
     .status-bar button:active { 
@@ -253,18 +253,18 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     }
     
     #dialog-box h1 {
-        font-size: 1.3rem !important;
-        margin: 0 0 8px 0 !important;
+        font-size: 1.3rem;
+        margin: 0 0 8px 0;
     }
     
     #dialog-box img {
-        width: 60px !important;
-        height: 60px !important;
-        border: 3px solid var(--accent-red) !important;
+        width: 60px;
+        height: 60px;
+        border-width: 3px;
     }
     
     #dialog-box p {
-        font-size: 0.9rem !important;
+        font-size: 0.9rem;
     }
 }
 
@@ -348,12 +348,12 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     .instructions p { margin: 2px 0; }
     
     /* Button placement - No margins, just flex gap */
-    .big-btn {
-        width: auto !important;
-        padding: 12px 30px !important;
+    .overlay-content .big-btn {
+        width: auto;
+        padding: 12px 30px;
         height: fit-content;
         font-size: 1.1rem;
-        margin: 0 !important;
+        margin: 0;
         white-space: nowrap;
         flex-shrink: 0;
     }
