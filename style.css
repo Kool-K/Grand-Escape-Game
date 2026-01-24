@@ -68,6 +68,13 @@ html, body {
     box-sizing: border-box;
 }
 
+/* Mobile landscape optimization - reduce padding to maximize canvas space */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    .canvas-wrapper {
+        padding: 50px 15px 40px 15px;
+    }
+}
+
 canvas {
     display: block;
     aspect-ratio: 950 / 650;
@@ -94,6 +101,14 @@ canvas {
     pointer-events: none; 
 }
 
+/* Mobile landscape - compact status bar */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    .status-bar {
+        top: 8px;
+        padding: 0 15px;
+    }
+}
+
 .turn-badge {
     background: rgba(255, 255, 255, 0.95);
     padding: 8px 20px;
@@ -103,6 +118,16 @@ canvas {
     color: var(--text-color);
     pointer-events: auto;
     box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+/* Mobile landscape - smaller badges */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    .turn-badge {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border: 2px solid #2c3e50;
+        box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    }
 }
 
 .status-bar button {
@@ -119,6 +144,26 @@ canvas {
 }
 
 .status-bar button:active { transform: translateY(3px); box-shadow: none; }
+
+/* Mobile landscape - smaller buttons */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    .status-bar button {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border: 2px solid #2c3e50;
+        box-shadow: 0 3px 0 #2c3e50;
+    }
+    
+    #help-btn {
+        width: 35px !important;
+        padding: 6px 0 !important;
+        font-size: 1rem !important;
+    }
+    
+    .status-bar button:active { 
+        transform: translateY(2px); 
+    }
+}
 
 /* --- FOOTER (Floating) --- */
 footer {
@@ -142,6 +187,18 @@ footer p {
 }
 
 footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
+
+/* Mobile landscape - smaller footer */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    footer {
+        bottom: 5px;
+    }
+    
+    footer p {
+        padding: 3px 10px;
+        font-size: 0.7rem;
+    }
+}
 
 /* --- Overlays --- */
 .overlay {
@@ -185,6 +242,30 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
     min-width: 300px;
     z-index: 200; 
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Mobile landscape - compact dialog */
+@media screen and (max-height: 700px) and (orientation: landscape) {
+    #dialog-box {
+        padding: 15px;
+        border: 3px solid #2c3e50;
+        min-width: 250px;
+    }
+    
+    #dialog-box h1 {
+        font-size: 1.3rem !important;
+        margin: 0 0 8px 0 !important;
+    }
+    
+    #dialog-box img {
+        width: 60px !important;
+        height: 60px !important;
+        border: 3px solid var(--accent-red) !important;
+    }
+    
+    #dialog-box p {
+        font-size: 0.9rem !important;
+    }
 }
 
 @keyframes popIn {
@@ -231,6 +312,14 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
 /* Landscape small height adjustments */
 
 @media screen and (max-height: 500px) and (orientation: landscape) {
+    /* Extra compact canvas wrapper for very small screens */
+    .canvas-wrapper {
+        padding: 45px 10px 5px 10px;
+    }
+    
+    /* Hide footer on small landscape to save view */
+    footer { display: none; }
+    
     .overlay-content {
         flex-direction: row; /* Horizontal Layout */
         
@@ -268,9 +357,6 @@ footer a { color: var(--accent-red); text-decoration: none; font-weight: 800; }
         white-space: nowrap;
         flex-shrink: 0;
     }
-    
-    /* Hide footer on small landscape to save view */
-    footer { display: none; }
 }
 
 /* --- rotate phone overlay --- */
