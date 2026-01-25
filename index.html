@@ -11,40 +11,36 @@
         <div id="rotate-overlay">
             <div class="rotate-content">
                 <h1>↻ Rotate Your Phone</h1>
-                <p>
-                    This game is best played in
-                    <strong>Landscape Mode</strong>
-                    .
-                </p>
+                <p>This game is best played in <strong>Landscape Mode</strong>.</p>
                 <div class="rotate-icon">📱</div>
             </div>
         </div>
+
         <div class="game-container">
             <div class="status-bar">
-                <div style="display: flex; gap: 10px;">
-                    <div class="turn-badge" style="background: #f1c40f;">
-                        Level:
-                        <span id="level-indicator">1</span>
-                    </div>
-                    <div class="turn-badge">
-                        Turn:
-                        <span id="turn-count">0</span>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button id="help-btn" onclick="showHelp()" style="background: #3498db; width: 45px; padding: 8px 0;">?</button>
-                    <button onclick="resetLevel()">↻ Restart</button>
-                </div>
-            </div>
+    <div class="info-group">
+        <div class="compact-badge">
+            <span class="label">LVL</span>
+            <span id="level-indicator" class="value">1</span>
+            <span class="divider">|</span>
+            <span class="label">TURN</span>
+            <span id="turn-count" class="value">0</span>
+        </div>
+    </div>
+    <div class="action-group">
+        <button id="help-btn" class="icon-btn" onclick="showHelp()">?</button>
+        <button class="restart-btn" onclick="resetLevel()">↻ RESTART</button>
+    </div>
+</div>
+
             <div class="canvas-wrapper">
                 <canvas id="gameCanvas"></canvas>
             </div>
+
             <footer>
-                <p>
-                    Made by
-                    <a href="https://github.com/Kool-K" target="_blank">Ketaki Kulkarni</a>
-                </p>
+                <p>Made by <a href="https://github.com/Kool-K" target="_blank">Ketaki Kulkarni</a></p>
             </footer>
+
             <div id="start-screen" class="overlay">
                 <div class="overlay-content">
                     <div class="overlay-text-group">
@@ -59,6 +55,7 @@
                     <button class="big-btn" onclick="startGame()">PLAY NOW</button>
                 </div>
             </div>
+
             <div id="end-screen" class="overlay hidden">
                 <div class="overlay-content">
                     <div class="overlay-text-group">
@@ -68,6 +65,7 @@
                     <button id="next-level-btn" class="big-btn" onclick="nextLevelAction()">PLAY AGAIN</button>
                 </div>
             </div>
+
             <div id="dialog-box" class="hidden">
                 <p id="dialog-text">...</p>
             </div>

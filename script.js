@@ -9,14 +9,14 @@ const levelIndicator = document.getElementById('level-indicator');
 const nextLevelBtn = document.getElementById('next-level-btn');
 const dialogBox = document.getElementById('dialog-box');
 
-// Configuration
+// --- Updated Configuration ---
 const LOGICAL_WIDTH = 950;
 const LOGICAL_HEIGHT = 650;
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// Visual Settings
-const VISUAL_RADIUS = 24;
-const HIT_RADIUS = 50;
+// Visual Settings - SHRUNK FOR MOBILE to prevent overlap
+const VISUAL_RADIUS = isMobile ? 18 : 24; // Nodes are smaller on mobile
+const HIT_RADIUS = isMobile ? 40 : 50;   // Keep hit area decent but not overlapping
 const ANIMATION_SPEED = 0.15;
 const SHADOW_BLUR = isMobile ? 0 : 10;
 const SHADOW_OFFSET = isMobile ? 0 : 5;
@@ -112,11 +112,12 @@ const LEVEL_RING_NODES = [
     { id: 23, x: 540, y: 520, neighbors: [14, 22, 24, 31] },
     { id: 24, x: 680, y: 520, neighbors: [15, 23, 25, 32] },
     { id: 25, x: 820, y: 520, neighbors: [16, 24, 33] },
-    { id: 26, x: 300, y: 600, neighbors: [17, 27] },
-    { id: 27, x: 460, y: 600, neighbors: [18, 26, 28] },
-    { id: 28, x: 620, y: 600, neighbors: [19, 27] },
-    { id: 29, x: 260, y: 610, neighbors: [21, 30] },
-    { id: 30, x: 400, y: 610, neighbors: [22, 29, 31] },
+    // FIXED COORDINATES BELOW
+    { id: 26, x: 300, y: 580, neighbors: [17, 27] }, // Moved left (x: 380 -> 300)
+    { id: 27, x: 460, y: 580, neighbors: [18, 26, 28] },
+    { id: 28, x: 620, y: 580, neighbors: [19, 27] },
+    { id: 29, x: 180, y: 610, neighbors: [21, 30] }, 
+    { id: 30, x: 400, y: 610, neighbors: [22, 29, 31] }, // Node 30 is now clearly below/between paths
     { id: 31, x: 540, y: 610, neighbors: [23, 30, 32] },
     { id: 32, x: 680, y: 610, neighbors: [24, 31, 33] },
     { id: 33, x: 820, y: 610, neighbors: [25, 32] }
@@ -272,7 +273,6 @@ function initLevel(levelNum) {
 
     levelIndicator.innerText = levelNum;
     if (levelNum === 2) {
-        levelIndicator.parentElement.style.background = "#ff5252";
         levelIndicator.parentElement.style.color = "white";
     } else {
         levelIndicator.parentElement.style.background = "#f1c40f";
