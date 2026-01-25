@@ -20,26 +20,26 @@ html, body {
     background-color: var(--bg-color);
     font-family: 'Fredoka', sans-serif;
     
-    /* FIX: Lock the body to prevent scroll bounce */
+    /* Lock the body to prevent scroll bounce */
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     overscroll-behavior: none;
 }
 
 .canvas-wrapper {
-    /* FIX: Use fixed positioning to ignore the address bar area */
+    /* Fixed positioning to ignore the address bar area */
     position: fixed;
     top: 0; 
     left: 0; 
     width: 100%; 
-    height: 100%; /* Fallback */
-    height: 100dvh; /* Modern fix: Dynamic Viewport Height */
+    height: 100%; 
+    height: 100dvh; /* Dynamic Viewport Height */
     
     display: flex; 
     justify-content: center; 
     align-items: center;
     box-sizing: border-box;
-    z-index: 0; /* Ensure it stays behind the UI */
+    z-index: 0;
 }
 
 .game-container {
@@ -52,7 +52,6 @@ html, body {
   align-items: center;
   background: var(--dark-blue);
 }
-
 
 canvas {
   display: block;
@@ -135,12 +134,12 @@ canvas {
 
 footer { 
     position: absolute; 
-    top: 75px; /* Sits below the badge */
+    top: 75px; 
     left: 30px; 
     color: rgba(255, 255, 255, 0.8); 
     z-index: 5; 
     font-size: 0.7rem;
-    pointer-events: none; /* Let clicks pass through to nodes if they overlap slightly */
+    pointer-events: none; 
 }
 
 footer p { margin: 0; }
@@ -148,7 +147,7 @@ footer a {
     color: var(--accent-yellow); 
     text-decoration: none; 
     font-weight: 700;
-    pointer-events: auto; /* Re-enable clicks for the actual link */
+    pointer-events: auto; 
 }
 
 /* Ensure the text is visible on top of the modal image */
@@ -157,7 +156,6 @@ footer a {
   margin-top: 0;
 }
 
-/* Ensure images don't overflow the horizontal modal */
 .modal-image-side img {
   max-width: 150px;
   height: auto;
@@ -267,7 +265,6 @@ footer a {
     object-fit: cover; 
 }
 
-/* Default vertical layout for Desktop/Portrait */
 .overlay-content { 
     background: white; 
     padding: 25px; 
@@ -277,7 +274,7 @@ footer a {
     max-width: 450px; 
     width: 90%; 
     display: flex; 
-    flex-direction: column; /* Vertical by default */
+    flex-direction: column; 
     align-items: center;
     gap: 15px; 
 }
@@ -341,9 +338,8 @@ footer a {
   }
 }
 
-/* 1. Rule to increase space between instruction box and button */
 .overlay-content .big-btn {
-  margin-top: 15px; /* Adjust this value for more/less space */
+  margin-top: 15px;
 }
 
 @media screen and (max-height: 500px) and (orientation: landscape) {
@@ -351,7 +347,6 @@ footer a {
     display: block !important;
     position: absolute;
     bottom: auto;
-    /* Positioned exactly under the compact-badge */
     top: 55px;
     left: 30px;
     transform: none;
@@ -371,7 +366,6 @@ footer a {
     font-weight: 700;
   }
 
-  /* Ensure status bar is tucked into the corner */
   .status-bar {
     top: 10px;
     padding: 0 20px;

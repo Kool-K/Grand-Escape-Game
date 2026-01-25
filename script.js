@@ -9,12 +9,15 @@ const levelIndicator = document.getElementById('level-indicator');
 const nextLevelBtn = document.getElementById('next-level-btn');
 const dialogBox = document.getElementById('dialog-box');
 
-// --- Updated Configuration ---
+// --- Configuration ---
 const LOGICAL_WIDTH = 950;
 const LOGICAL_HEIGHT = 650;
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);// Visual Settings - SHRUNK FOR MOBILE to prevent overlap
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Visual Settings
 const VISUAL_RADIUS = isMobile ? 22 : 24;
-const HIT_RADIUS = isMobile ? 65 : 50;
+// We rely on Swipe for mobile, but keep hit radius for Desktop clicks
+const HIT_RADIUS = isMobile ? 65 : 40; 
 const ANIMATION_SPEED = 0.15;
 const SHADOW_BLUR = isMobile ? 0 : 10;
 const SHADOW_OFFSET = isMobile ? 0 : 5;
@@ -110,12 +113,11 @@ const LEVEL_RING_NODES = [
     { id: 23, x: 540, y: 520, neighbors: [14, 22, 24, 31] },
     { id: 24, x: 680, y: 520, neighbors: [15, 23, 25, 32] },
     { id: 25, x: 820, y: 520, neighbors: [16, 24, 33] },
-    // FIXED COORDINATES BELOW
-    { id: 26, x: 300, y: 580, neighbors: [17, 27] }, // Moved left (x: 380 -> 300)
+    { id: 26, x: 300, y: 580, neighbors: [17, 27] }, 
     { id: 27, x: 460, y: 580, neighbors: [18, 26, 28] },
     { id: 28, x: 620, y: 580, neighbors: [19, 27] },
     { id: 29, x: 180, y: 610, neighbors: [21, 30] }, 
-    { id: 30, x: 400, y: 610, neighbors: [22, 29, 31] }, // Node 30 is now clearly below/between paths
+    { id: 30, x: 400, y: 610, neighbors: [22, 29, 31] },
     { id: 31, x: 540, y: 610, neighbors: [23, 30, 32] },
     { id: 32, x: 680, y: 610, neighbors: [24, 31, 33] },
     { id: 33, x: 820, y: 610, neighbors: [25, 32] }
@@ -146,8 +148,6 @@ const LEVELS = {
     }
 };
 
-const GADGETS = ["Anywhere Door", "Bamboo Copter", "Time Machine", "Dress-Up Camera", "Air Cannon", "Invisible Cloak", "Small Light"];
-
 // --- GAME STATE ---
 let currentLevel = 1;
 let currentNodes = [];
@@ -161,6 +161,11 @@ let turn = 0;
 let playerAnim = { x: 0, y: 0 };
 let enemies = [];
 let nextLevelActionType = 'restart';
+
+// --- GESTURE STATE ---
+let isDragging = false;
+let dragStart = { x: 0, y: 0 };
+let dragCurrent = { x: 0, y: 0 };
 
 // --- FUNCTIONS ---
 function launchConfetti() {
@@ -188,8 +193,6 @@ function launchConfetti() {
 function handleLevelWin() {
     isPlaying = false;
     endScreen.classList.remove('hidden');
-
-    // Select the image container in the horizontal layout
     const imgSide = endScreen.querySelector('.modal-image-side');
 
     if (currentLevel === 1) {
@@ -215,13 +218,11 @@ function gameOver(isWin, villain = null) {
         handleLevelWin();
         return;
     }
-
     isPlaying = false;
     endScreen.classList.remove('hidden');
     endTitle.innerText = "CAUGHT!";
     endTitle.style.color = "#ff5252";
     
-    // This now works for both desktop (vertical) and mobile (horizontal) layouts
     const imgSide = endScreen.querySelector('.modal-image-side');
     imgSide.innerHTML = `<img src="assets/${villain?.type || 'gian'}.webp" alt="Villain">`;
 
@@ -239,7 +240,6 @@ window.nextLevelAction = () => {
     if (nextLevelActionType === 'next') {
         startLevel2();
     } else if (nextLevelActionType === 'restart_all') {
-        // FULL RESET TO LEVEL 1
         currentLevel = 1;
         initLevel(1);
         resetLevelState();
@@ -272,7 +272,6 @@ function initLevel(levelNum) {
         levelIndicator.parentElement.style.background = "#f1c40f";
         levelIndicator.parentElement.style.color = "#2c3e50";
     }
-
     initAnimation();
 }
 
@@ -287,42 +286,31 @@ function initAnimation() {
     });
     isAnimating = false;
 }
+
 function setupCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    
-    // Explicitly grab the visible window size
     const visualWidth = window.innerWidth;
     const visualHeight = window.innerHeight;
-    
-    // Check landscape based on height
     const isLandscape = visualHeight < 600 && isMobile; 
 
     if (isLandscape) {
         canvas.width = visualWidth * dpr;
         canvas.height = visualHeight * dpr;
-
-        // CHANGED: Reduced from 0.95 to 0.9 to create a "Safety Margin"
-        // This ensures nodes don't get cut off by curved screen corners or bottom bars
         const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.9;
-        
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr * scale, dpr * scale);
-
-        // Center the map in the visible area
         const offsetX = (visualWidth / scale - LOGICAL_WIDTH) / 2;
         const offsetY = (visualHeight / scale - LOGICAL_HEIGHT) / 2;
         ctx.translate(offsetX, offsetY);
     } else {
-        // Desktop / Portrait logic
         canvas.width = LOGICAL_WIDTH * dpr;
         canvas.height = LOGICAL_HEIGHT * dpr;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
     }
-    
     ctx.imageSmoothingEnabled = true;
 }
-// Ensure getMousePos uses the same visualWidth/Height logic
+
 function getMousePos(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const visualWidth = window.innerWidth;
@@ -330,7 +318,7 @@ function getMousePos(clientX, clientY) {
     const isLandscape = visualHeight < 500 && isMobile;
 
     if (isLandscape) {
-        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.95;
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.9;
         const offsetX = (visualWidth - LOGICAL_WIDTH * scale) / 2;
         const offsetY = (visualHeight - LOGICAL_HEIGHT * scale) / 2;
         return {
@@ -351,25 +339,6 @@ window.addEventListener('resize', () => {
     setupCanvas();
     draw();
 });
-
-//for better visibility on small screens
-// function setupCanvas() {
-    // let dpr = window.devicePixelRatio || 1;
-    // // Limit DPR on mobile to prevent lag on high-res screens
-    // if (isMobile && dpr > 2) dpr = 2; 
-    
-    // // Use the container's offset size for more accurate mobile fitting
-    // const rect = canvas.parentElement.getBoundingClientRect();
-    
-    // canvas.width = LOGICAL_WIDTH * dpr;
-    // canvas.height = LOGICAL_HEIGHT * dpr;
-    
-    // ctx.setTransform(1, 0, 0, 1, 0, 0); 
-    // ctx.scale(dpr, dpr);
-    
-    // ctx.imageSmoothingEnabled = true;
-    // ctx.imageSmoothingQuality = 'high';
-// }
 
 function getShortestPath(start, target) {
     if (start === target) return [start];
@@ -501,6 +470,38 @@ function draw() {
         ctx.lineWidth = (n.id === hoverNode) ? 4 : 3;
         ctx.fill(); ctx.stroke(); ctx.restore();
     });
+
+    // --- DRAW SLINGSHOT ARROW ---
+    if (isDragging) {
+        ctx.save();
+        ctx.beginPath();
+        const startX = currentNodes[playerNode].x;
+        const startY = currentNodes[playerNode].y;
+        // Limit arrow length visually
+        const dx = dragCurrent.x - dragStart.x;
+        const dy = dragCurrent.y - dragStart.y;
+        const angle = Math.atan2(dy, dx);
+        const len = Math.min(Math.sqrt(dx*dx + dy*dy), 100); 
+        
+        const arrowEndX = startX + Math.cos(angle) * len;
+        const arrowEndY = startY + Math.sin(angle) * len;
+
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(arrowEndX, arrowEndY);
+        ctx.strokeStyle = "#ff4757";
+        ctx.lineWidth = 6;
+        ctx.stroke();
+
+        // Arrowhead
+        ctx.beginPath();
+        ctx.moveTo(arrowEndX, arrowEndY);
+        ctx.lineTo(arrowEndX - 15 * Math.cos(angle - Math.PI / 6), arrowEndY - 15 * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(arrowEndX - 15 * Math.cos(angle + Math.PI / 6), arrowEndY - 15 * Math.sin(angle + Math.PI / 6));
+        ctx.fillStyle = "#ff4757";
+        ctx.fill();
+        ctx.restore();
+    }
+
     const goal = currentNodes[goalNode];
     ctx.save();
     if (!isMobile) { ctx.shadowColor = COLORS.goal; ctx.shadowBlur = 15; }
@@ -517,53 +518,116 @@ function draw() {
 
 function gameLoop() { if (isPlaying) { pulseFrame++; updateAnimations(); draw(); requestAnimationFrame(gameLoop); } }
 
-function handleInput(clientX, clientY) {
+// --- UNIFIED INPUT HANDLER (SWIPE + CLICK) ---
+function handleStart(x, y) {
     if (!isPlaying || isAnimating) return;
-    
-    const pos = getMousePos(clientX, clientY);
-    const validMoveIds = currentNodes[playerNode].neighbors;
-
-    // FIND THE NEAREST NODE:
-    // Instead of just checking if we hit a node, we find the closest one 
-    // to where the user actually tapped.
-    let closestNode = null;
-    let minDistance = HIT_RADIUS; 
-
-    // We prioritize checking valid moves first for better UX
-    validMoveIds.forEach(id => {
-        const n = currentNodes[id];
-        const dist = Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2);
-        if (dist < minDistance) {
-            minDistance = dist;
-            closestNode = n;
-        }
-    });
-
-    // If we didn't tap near a valid move, check if we tapped near ANY node
-    // to trigger the "Too Far" dialog feedback
-    if (!closestNode) {
-        let anyNode = currentNodes.find(n => 
-            Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS
-        );
-        if (anyNode && anyNode.id !== playerNode) {
-            showTooFarDialog();
-        }
-        return;
-    }
-
-    // Process the move to the closest valid node
-    handleMove(closestNode.id);
+    const pos = getMousePos(x, y);
+    dragStart = pos;
+    dragCurrent = pos;
+    isDragging = true;
 }
 
-canvas.addEventListener('mousemove', (e) => {
-    if (!isPlaying) return;
-    const pos = getMousePos(e.clientX, e.clientY);
-    let hovered = currentNodes.find(n => Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS);
-    if (hovered) { canvas.style.cursor = 'pointer'; hoverNode = hovered.id; }
-    else { canvas.style.cursor = 'default'; hoverNode = -1; }
-});
-canvas.addEventListener('mousedown', (e) => handleInput(e.clientX, e.clientY));
-canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const touch = e.touches[0]; handleInput(touch.clientX, touch.clientY); }, { passive: false });
+function handleMoveInput(x, y) {
+    if (!isDragging) {
+        // Just hover logic for desktop mouse
+        const pos = getMousePos(x, y);
+        let hovered = currentNodes.find(n => Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS);
+        if (hovered) { canvas.style.cursor = 'pointer'; hoverNode = hovered.id; }
+        else { canvas.style.cursor = 'default'; hoverNode = -1; }
+        return;
+    }
+    // Update drag current for arrow drawing
+    dragCurrent = getMousePos(x, y);
+}
+
+function handleEnd(x, y) {
+    if (!isDragging) return;
+    isDragging = false;
+    
+    const pos = getMousePos(x, y);
+    const dx = pos.x - dragStart.x;
+    const dy = pos.y - dragStart.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // THRESHOLD:
+    // If distance is very small (< 20px), treat as TAP/CLICK.
+    // If distance is larger, treat as SWIPE.
+    
+    if (dist < 20) {
+        // --- TAP LOGIC ---
+        // Find if we clicked ON a valid neighbor
+        const validMoves = currentNodes[playerNode].neighbors;
+        const clickedNode = validMoves.find(nid => {
+            const n = currentNodes[nid];
+            const d = Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2);
+            return d < HIT_RADIUS; // Generous hit radius for mobile taps
+        });
+
+        if (clickedNode !== undefined) {
+            handleMove(clickedNode);
+        } else {
+            // Check if they tapped a non-neighbor node (Invalid Move)
+            const anyNode = currentNodes.find(n => Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2) < HIT_RADIUS);
+            if (anyNode && anyNode.id !== playerNode) showTooFarDialog();
+        }
+    } else {
+        // --- SWIPE LOGIC ---
+        const swipeAngle = Math.atan2(dy, dx);
+        
+        // Check all neighbors to see which one aligns with the swipe angle
+        let bestNeighbor = null;
+        let minAngleDiff = Math.PI / 4; // Tolerance: 45 degrees
+
+        currentNodes[playerNode].neighbors.forEach(nid => {
+            const n = currentNodes[nid];
+            const nx = n.x - currentNodes[playerNode].x;
+            const ny = n.y - currentNodes[playerNode].y;
+            const nAngle = Math.atan2(ny, nx);
+            
+            // Calculate difference, normalizing to -PI to PI
+            let diff = nAngle - swipeAngle;
+            while (diff > Math.PI) diff -= 2*Math.PI;
+            while (diff < -Math.PI) diff += 2*Math.PI;
+            diff = Math.abs(diff);
+
+            if (diff < minAngleDiff) {
+                minAngleDiff = diff;
+                bestNeighbor = nid;
+            }
+        });
+
+        if (bestNeighbor !== null) {
+            handleMove(bestNeighbor);
+        } else {
+            // Swipe was valid length but no path in that direction
+            showTooFarDialog();
+        }
+    }
+    // Clear arrow immediately
+    draw(); 
+}
+
+// Event Listeners
+canvas.addEventListener('mousedown', e => handleStart(e.clientX, e.clientY));
+canvas.addEventListener('mousemove', e => handleMoveInput(e.clientX, e.clientY));
+canvas.addEventListener('mouseup', e => handleEnd(e.clientX, e.clientY));
+
+canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    handleStart(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    handleMoveInput(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    // Use changedTouches for the end position
+    handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+}, { passive: false });
+
 
 function handleMove(targetId) {
     playerNode = targetId; turn++; turnCount.innerText = turn;
@@ -578,17 +642,17 @@ function showTooFarDialog() {
     if (window.dialogTimer) clearTimeout(window.dialogTimer);
     const warnColor = COLORS.gian;
     dialogBox.innerHTML = `
-        <h1 style="margin: 0 0 10px 0; color: ${warnColor}; font-size: 1.8rem; text-transform: uppercase;">TOO FAR!</h1>
+        <h1 style="margin: 0 0 10px 0; color: ${warnColor}; font-size: 1.8rem; text-transform: uppercase;">INVALID MOVE!</h1>
         <div style="margin-bottom: 15px;"><img src="assets/bamboo_copter.webp" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid ${warnColor}; background: white; padding: 5px; object-fit: contain;"></div>
-        <p style="margin:0; font-size:1.1rem; color:#2c3e50; font-weight: 700; line-height: 1.4;">Tap a red circle!<br><span style="font-weight:normal; font-style:italic; font-size: 1rem;">"I will need a bamboo copter to go there!"</span></p>
+        <p style="margin:0; font-size:1.1rem; color:#2c3e50; font-weight: 700; line-height: 1.4;">No path that way!<br><span style="font-weight:normal; font-style:italic; font-size: 1rem;">"I will need a bamboo copter to go there!"</span></p>
     `;
     window.dialogTimer = setTimeout(() => dialogBox.classList.add('hidden'), 1300);
 }
 
-// --- Updated Instructions ---
+// --- Updated Instructions with Swipe Logic ---
 const helpInstructions = `
-    <p>🟡 Move 1 step at a time.</p>
-    <p>🔴 Tap Red Circles to move.</p>
+    <p>🟡 <strong>Desktop:</strong> Tap to Move.</p>
+    <p>👆 <strong>Mobile:</strong> Swipe towards a red circle.</p>
     <p>👹 Avoid Gian, Suneo, and Sensei.</p>
     <p>🧠 Trick them by looping!</p>
 `;
@@ -601,29 +665,28 @@ function showHelp() {
     title.innerText = "How To Play";
     instructionsDiv.innerHTML = helpInstructions;
     
-    // Change the button to call resumeGame instead of startGame
     startBtn.innerText = "RESUME GAME";
     startBtn.setAttribute("onclick", "resumeGame()");
 
     if (startScreen.classList.contains('hidden')) {
         startScreen.classList.remove('hidden');
-        isPlaying = false; // Pause while reading
+        isPlaying = false; 
     }
 }
 
-// New function to just close the modal without resetting
 window.resumeGame = () => {
     startScreen.classList.add('hidden');
     isPlaying = true;
     requestAnimationFrame(gameLoop);
 };
 
-// StartGame now only runs for the very first time or full resets
 window.startGame = () => {
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
+    
+    // Inject instructions into the start screen for the first time
+    document.querySelector('.instructions').innerHTML = helpInstructions;
 
-    // Restore the button to its original state for next time
     const startBtn = startScreen.querySelector('.big-btn');
     startBtn.innerText = "PLAY NOW";
     startBtn.setAttribute("onclick", "startGame()");
@@ -642,4 +705,8 @@ function resetLevelState() { turn = 0; turnCount.innerText = 0; initAnimation();
 
 setupCanvas();
 initLevel(1);
-window.onload = () => { draw(); };
+// Ensure instructions are set on load
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.instructions').innerHTML = helpInstructions;
+    draw();
+});
