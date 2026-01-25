@@ -191,31 +191,22 @@ function handleLevelWin() {
     isPlaying = false;
     endScreen.classList.remove('hidden');
 
+    // Select the image container in the horizontal layout
+    const imgSide = endScreen.querySelector('.modal-image-side');
+
     if (currentLevel === 1) {
         endTitle.innerText = "LEVEL 1 CLEAR!";
         endTitle.style.color = "#34ace0";
-        endMessage.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <img src="assets/doraemon.webp" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #34ace0; background: white;">
-            </div>
-            Yay! Awesome! You outsmarted them.<br>
-            Prepare yourself... Level 2 is much trickier!
-        `;
+        imgSide.innerHTML = `<img src="assets/doraemon.webp">`;
+        endMessage.innerHTML = `Awesome! Level 2 is much trickier!`;
         nextLevelBtn.innerText = "START LEVEL 2";
         nextLevelActionType = 'next';
     } else {
         launchConfetti();
         endTitle.innerText = "🎉 CHAMPION! 🎉";
         endTitle.style.color = "#2ecc71";
-        endMessage.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <img src="assets/victory_scene.webp" style="width: 200px; border-radius: 15px; border: 5px solid #f1c40f; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-            </div>
-            <strong style="font-size: 1.2rem;">WELL DONE!</strong><br>
-            You saved Nobita from every trap.<br>
-            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
-            <p style="color: #666; font-style: italic;">More levels and gadgets coming soon!</p>
-        `;
+        imgSide.innerHTML = `<img src="assets/victory_scene.webp">`;
+        endMessage.innerHTML = `<strong style="font-size: 1.1rem;">SAVED!</strong><br>More levels coming soon!`;
         nextLevelBtn.innerText = "PLAY AGAIN";
         nextLevelActionType = 'restart_all';
     }
@@ -231,18 +222,16 @@ function gameOver(isWin, villain = null) {
     endScreen.classList.remove('hidden');
     endTitle.innerText = "CAUGHT!";
     endTitle.style.color = "#ff5252";
+    
+    const imgSide = endScreen.querySelector('.modal-image-side');
+    imgSide.innerHTML = `<img src="assets/${villain?.type || 'gian'}.webp">`;
 
     const fullPhrase = villain?.catchPhrase || "Villain: You were caught!";
     const splitIndex = fullPhrase.indexOf(':');
     const name = fullPhrase.substring(0, splitIndex + 1);
     const message = fullPhrase.substring(splitIndex + 1);
 
-    endMessage.innerHTML = `
-        <div style="margin-bottom: 15px;">
-            <img src="assets/${villain?.type || 'gian'}.webp" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ff5252; background: white;">
-        </div>
-        <strong>${name}</strong>${message}<br>
-    `;
+    endMessage.innerHTML = `<strong>${name}</strong>${message}`;
     nextLevelBtn.innerText = "TRY AGAIN";
     nextLevelActionType = 'restart';
 }
@@ -251,7 +240,13 @@ window.nextLevelAction = () => {
     if (nextLevelActionType === 'next') {
         startLevel2();
     } else if (nextLevelActionType === 'restart_all') {
-        startGame();
+        // FULL RESET TO LEVEL 1
+        currentLevel = 1;
+        initLevel(1);
+        resetLevelState();
+        endScreen.classList.add('hidden');
+        isPlaying = true;
+        requestAnimationFrame(gameLoop);
     } else {
         resetLevel();
     }
@@ -295,16 +290,59 @@ function initAnimation() {
 }
 
 function setupCanvas() {
-    let dpr = window.devicePixelRatio || 1;
-    if (isMobile && dpr > 2) dpr = 2;
-    canvas.width = LOGICAL_WIDTH * dpr;
-    canvas.height = LOGICAL_HEIGHT * dpr;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
+    const dpr = window.devicePixelRatio || 1;
+    const isLandscape = window.innerHeight < 500 && isMobile;
+
+    if (isLandscape) {
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        
+        const scale = Math.min(window.innerWidth / LOGICAL_WIDTH, window.innerHeight / LOGICAL_HEIGHT);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr * scale, dpr * scale);
+
+        // This centers the map on the screen
+        const offsetX = (window.innerWidth / scale - LOGICAL_WIDTH) / 2;
+        const offsetY = (window.innerHeight / scale - LOGICAL_HEIGHT) / 2;
+        ctx.translate(offsetX, offsetY);
+    } else {
+        // Desktop/Portrait logic
+        const container = canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+        
+        // Use logic width but respect aspect ratio
+        canvas.width = LOGICAL_WIDTH * dpr;
+        canvas.height = LOGICAL_HEIGHT * dpr;
+        
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+    }
+    
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
 }
 
+function getMousePos(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const isLandscape = window.innerHeight < 500 && isMobile;
+
+    if (isLandscape) {
+        const scale = Math.min(window.innerWidth / LOGICAL_WIDTH, window.innerHeight / LOGICAL_HEIGHT);
+        const offsetX = (window.innerWidth - LOGICAL_WIDTH * scale) / 2;
+        const offsetY = (window.innerHeight - LOGICAL_HEIGHT * scale) / 2;
+        return {
+            x: (clientX - rect.left - offsetX) / scale,
+            y: (clientY - rect.top - offsetY) / scale
+        };
+    } else {
+        // Desktop Scaling
+        const scaleX = LOGICAL_WIDTH / rect.width;
+        const scaleY = LOGICAL_HEIGHT / rect.height;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+}
 // for better visibility on small screens
 // function setupCanvas() {
     // let dpr = window.devicePixelRatio || 1;
@@ -470,13 +508,6 @@ function draw() {
 
 function gameLoop() { if (isPlaying) { pulseFrame++; updateAnimations(); draw(); requestAnimationFrame(gameLoop); } }
 
-function getMousePos(clientX, clientY) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = LOGICAL_WIDTH / rect.width;
-    const scaleY = LOGICAL_HEIGHT / rect.height;
-    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
-}
-
 function handleInput(clientX, clientY) {
     if (!isPlaying || isAnimating) return;
     const pos = getMousePos(clientX, clientY);
@@ -529,43 +560,47 @@ const helpInstructions = `
 `;
 
 function showHelp() {
-    // Reuse the start screen as a help modal
+    const title = startScreen.querySelector('h1');
     const instructionsDiv = startScreen.querySelector('.instructions');
     const startBtn = startScreen.querySelector('.big-btn');
-    const title = startScreen.querySelector('h1');
 
     title.innerText = "How To Play";
     instructionsDiv.innerHTML = helpInstructions;
+    
+    // Change the button to call resumeGame instead of startGame
     startBtn.innerText = "RESUME GAME";
+    startBtn.setAttribute("onclick", "resumeGame()");
 
-    // If game is already playing, this acts as a toggle
-    if (!startScreen.classList.contains('hidden')) {
-        startScreen.classList.add('hidden');
-        isPlaying = true;
-    } else {
+    if (startScreen.classList.contains('hidden')) {
         startScreen.classList.remove('hidden');
-        isPlaying = false; // Pause game while reading
+        isPlaying = false; // Pause while reading
     }
 }
 
-// Update startGame to ensure title resets if help was opened
-window.startGame = () => {
+// New function to just close the modal without resetting
+window.resumeGame = () => {
     startScreen.classList.add('hidden');
-    endScreen.classList.add('hidden');
-
-    // Only reset the level if we are actually starting fresh
-    if (turn === 0 && currentLevel === 1) {
-        initLevel(1);
-    }
-
     isPlaying = true;
     requestAnimationFrame(gameLoop);
 };
 
-// Ensure the start screen has the correct text on first load
-document.addEventListener('DOMContentLoaded', () => {
-    startScreen.querySelector('.instructions').innerHTML = helpInstructions;
-});
+// StartGame now only runs for the very first time or full resets
+window.startGame = () => {
+    startScreen.classList.add('hidden');
+    endScreen.classList.add('hidden');
+
+    // Restore the button to its original state for next time
+    const startBtn = startScreen.querySelector('.big-btn');
+    startBtn.innerText = "PLAY NOW";
+    startBtn.setAttribute("onclick", "startGame()");
+
+    currentLevel = 1;
+    initLevel(1);
+    resetLevelState();
+
+    isPlaying = true;
+    requestAnimationFrame(gameLoop);
+};
 
 window.resetLevel = () => { endScreen.classList.add('hidden'); initLevel(currentLevel); resetLevelState(); isPlaying = true; requestAnimationFrame(gameLoop); };
 function startLevel2() { endScreen.classList.add('hidden'); currentLevel = 2; initLevel(2); isPlaying = true; resetLevelState(); requestAnimationFrame(gameLoop); }

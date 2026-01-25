@@ -11,65 +11,68 @@
         <div id="rotate-overlay">
             <div class="rotate-content">
                 <h1>↻ Rotate Your Phone</h1>
-                <p>This game is best played in <strong>Landscape Mode</strong>.</p>
+                <p>
+                    This game is best played in
+                    <strong>Landscape Mode</strong>
+                    .
+                </p>
                 <div class="rotate-icon">📱</div>
             </div>
         </div>
-
         <div class="game-container">
             <div class="status-bar">
-    <div class="info-group">
-        <div class="compact-badge">
-            <span class="label">LVL</span>
-            <span id="level-indicator" class="value">1</span>
-            <span class="divider">|</span>
-            <span class="label">TURN</span>
-            <span id="turn-count" class="value">0</span>
-        </div>
-    </div>
-    <div class="action-group">
-        <button id="help-btn" class="icon-btn" onclick="showHelp()">?</button>
-        <button class="restart-btn" onclick="resetLevel()">↻ RESTART</button>
-    </div>
-</div>
-
+                <div class="info-group">
+                    <div class="compact-badge">
+                        <span class="label">LVL</span>
+                        <span id="level-indicator" class="value">1</span>
+                        <span class="divider">|</span>
+                        <span class="label">TURN</span>
+                        <span id="turn-count" class="value">0</span>
+                    </div>
+                </div>
+                <div class="action-group">
+                    <button id="help-btn" class="icon-btn" onclick="showHelp()">?</button>
+                    <button class="restart-btn" onclick="window.resetLevel()">↻ RESTART</button>
+                </div>
+            </div>
             <div class="canvas-wrapper">
                 <canvas id="gameCanvas"></canvas>
             </div>
-
-            <footer>
-                <p>Made by <a href="https://github.com/Kool-K" target="_blank">Ketaki Kulkarni</a></p>
-            </footer>
-
+            <div id="dialog-box" class="hidden"></div>
             <div id="start-screen" class="overlay">
                 <div class="overlay-content">
-                    <div class="overlay-text-group">
+                    <div class="modal-image-side">
+                        <img src="assets/doraemon.webp" alt="Doraemon">
+                    </div>
+                    <div class="modal-text-side">
                         <h1>Nobita's Escape</h1>
                         <div class="instructions">
                             <p>🟡 Move 1 step at a time.</p>
                             <p class="instruction-highlight">🔴 Tap Red Circles to move.</p>
                             <p>👹 Avoid Gian, Suneo, and Sensei.</p>
-                            <p>🧠 Trick them by looping!</p>
                         </div>
+                        <button class="big-btn" onclick="startGame()">PLAY NOW</button>
                     </div>
-                    <button class="big-btn" onclick="startGame()">PLAY NOW</button>
                 </div>
             </div>
-
             <div id="end-screen" class="overlay hidden">
                 <div class="overlay-content">
-                    <div class="overlay-text-group">
+                    <div class="modal-image-side"></div>
+                    <div class="modal-text-side">
                         <h1 id="end-title">Game Over</h1>
-                        <p id="end-message"></p>
+                        <p id="end-message" style="margin-bottom: 10px;"></p>
+                        <button id="next-level-btn" class="big-btn" onclick="nextLevelAction()">PLAY AGAIN</button>
                     </div>
-                    <button id="next-level-btn" class="big-btn" onclick="nextLevelAction()">PLAY AGAIN</button>
                 </div>
             </div>
-
-            <div id="dialog-box" class="hidden">
-                <p id="dialog-text">...</p>
-            </div>
+            <footer>
+                <p>
+                    Made by
+                    <a href="https://github.com/Kool-K" target="_blank">Ketaki Kulkarni</a>
+                </p>
+            </footer>
         </div>
         <script src="script.js"></script>
     </body>
 </html>
+
