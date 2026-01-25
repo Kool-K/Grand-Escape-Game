@@ -288,32 +288,33 @@ function initAnimation() {
     });
     isAnimating = false;
 }
-
 function setupCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    // window.innerHeight is the key here; it excludes the browser's top bar
+    
+    // Explicitly grab the visible window size
     const visualWidth = window.innerWidth;
     const visualHeight = window.innerHeight;
-    const isLandscape = visualHeight < 500 && isMobile;
+    
+    // Check landscape based on height
+    const isLandscape = visualHeight < 600 && isMobile; 
 
     if (isLandscape) {
         canvas.width = visualWidth * dpr;
         canvas.height = visualHeight * dpr;
-        
-        // We add a 0.9 multiplier (90%) to the scale to ensure the 
-        // nodes have a "padding" from the screen edges
-        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.95;
+
+        // CHANGED: Reduced from 0.95 to 0.9 to create a "Safety Margin"
+        // This ensures nodes don't get cut off by curved screen corners or bottom bars
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.9;
         
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr * scale, dpr * scale);
 
-        // Re-centering logic
+        // Center the map in the visible area
         const offsetX = (visualWidth / scale - LOGICAL_WIDTH) / 2;
         const offsetY = (visualHeight / scale - LOGICAL_HEIGHT) / 2;
         ctx.translate(offsetX, offsetY);
     } else {
-        // Desktop / Portrait logic remains the same
-        const container = canvas.parentElement;
+        // Desktop / Portrait logic
         canvas.width = LOGICAL_WIDTH * dpr;
         canvas.height = LOGICAL_HEIGHT * dpr;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -322,7 +323,6 @@ function setupCanvas() {
     
     ctx.imageSmoothingEnabled = true;
 }
-
 // Ensure getMousePos uses the same visualWidth/Height logic
 function getMousePos(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
