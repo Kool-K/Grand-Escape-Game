@@ -223,8 +223,9 @@ function gameOver(isWin, villain = null) {
     endTitle.innerText = "CAUGHT!";
     endTitle.style.color = "#ff5252";
     
+    // This now works for both desktop (vertical) and mobile (horizontal) layouts
     const imgSide = endScreen.querySelector('.modal-image-side');
-    imgSide.innerHTML = `<img src="assets/${villain?.type || 'gian'}.webp">`;
+    imgSide.innerHTML = `<img src="assets/${villain?.type || 'gian'}.webp" alt="Villain">`;
 
     const fullPhrase = villain?.catchPhrase || "Villain: You were caught!";
     const splitIndex = fullPhrase.indexOf(':');
@@ -291,29 +292,31 @@ function initAnimation() {
 
 function setupCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    const isLandscape = window.innerHeight < 500 && isMobile;
+    // window.innerHeight is the key here; it excludes the browser's top bar
+    const visualWidth = window.innerWidth;
+    const visualHeight = window.innerHeight;
+    const isLandscape = visualHeight < 500 && isMobile;
 
     if (isLandscape) {
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
+        canvas.width = visualWidth * dpr;
+        canvas.height = visualHeight * dpr;
         
-        const scale = Math.min(window.innerWidth / LOGICAL_WIDTH, window.innerHeight / LOGICAL_HEIGHT);
+        // We add a 0.9 multiplier (90%) to the scale to ensure the 
+        // nodes have a "padding" from the screen edges
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.95;
+        
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr * scale, dpr * scale);
 
-        // This centers the map on the screen
-        const offsetX = (window.innerWidth / scale - LOGICAL_WIDTH) / 2;
-        const offsetY = (window.innerHeight / scale - LOGICAL_HEIGHT) / 2;
+        // Re-centering logic
+        const offsetX = (visualWidth / scale - LOGICAL_WIDTH) / 2;
+        const offsetY = (visualHeight / scale - LOGICAL_HEIGHT) / 2;
         ctx.translate(offsetX, offsetY);
     } else {
-        // Desktop/Portrait logic
+        // Desktop / Portrait logic remains the same
         const container = canvas.parentElement;
-        const rect = container.getBoundingClientRect();
-        
-        // Use logic width but respect aspect ratio
         canvas.width = LOGICAL_WIDTH * dpr;
         canvas.height = LOGICAL_HEIGHT * dpr;
-        
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
     }
@@ -321,20 +324,22 @@ function setupCanvas() {
     ctx.imageSmoothingEnabled = true;
 }
 
+// Ensure getMousePos uses the same visualWidth/Height logic
 function getMousePos(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const isLandscape = window.innerHeight < 500 && isMobile;
+    const visualWidth = window.innerWidth;
+    const visualHeight = window.innerHeight;
+    const isLandscape = visualHeight < 500 && isMobile;
 
     if (isLandscape) {
-        const scale = Math.min(window.innerWidth / LOGICAL_WIDTH, window.innerHeight / LOGICAL_HEIGHT);
-        const offsetX = (window.innerWidth - LOGICAL_WIDTH * scale) / 2;
-        const offsetY = (window.innerHeight - LOGICAL_HEIGHT * scale) / 2;
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.95;
+        const offsetX = (visualWidth - LOGICAL_WIDTH * scale) / 2;
+        const offsetY = (visualHeight - LOGICAL_HEIGHT * scale) / 2;
         return {
             x: (clientX - rect.left - offsetX) / scale,
             y: (clientY - rect.top - offsetY) / scale
         };
     } else {
-        // Desktop Scaling
         const scaleX = LOGICAL_WIDTH / rect.width;
         const scaleY = LOGICAL_HEIGHT / rect.height;
         return {
@@ -343,7 +348,13 @@ function getMousePos(clientX, clientY) {
         };
     }
 }
-// for better visibility on small screens
+
+window.addEventListener('resize', () => {
+    setupCanvas();
+    draw();
+});
+
+//for better visibility on small screens
 // function setupCanvas() {
     // let dpr = window.devicePixelRatio || 1;
     // // Limit DPR on mobile to prevent lag on high-res screens
