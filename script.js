@@ -296,7 +296,8 @@ function setupCanvas() {
     if (isLandscape) {
         canvas.width = visualWidth * dpr;
         canvas.height = visualHeight * dpr;
-        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.9;
+        // CHANGED: Reduced from 0.9 to 0.85 to add more padding at top/bottom
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.85;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr * scale, dpr * scale);
         const offsetX = (visualWidth / scale - LOGICAL_WIDTH) / 2;
@@ -318,7 +319,7 @@ function getMousePos(clientX, clientY) {
     const isLandscape = visualHeight < 500 && isMobile;
 
     if (isLandscape) {
-        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.9;
+        const scale = Math.min(visualWidth / LOGICAL_WIDTH, visualHeight / LOGICAL_HEIGHT) * 0.85;
         const offsetX = (visualWidth - LOGICAL_WIDTH * scale) / 2;
         const offsetY = (visualHeight - LOGICAL_HEIGHT * scale) / 2;
         return {
@@ -477,11 +478,12 @@ function draw() {
         ctx.beginPath();
         const startX = currentNodes[playerNode].x;
         const startY = currentNodes[playerNode].y;
-        // Limit arrow length visually
+        
         const dx = dragCurrent.x - dragStart.x;
         const dy = dragCurrent.y - dragStart.y;
         const angle = Math.atan2(dy, dx);
-        const len = Math.min(Math.sqrt(dx*dx + dy*dy), 100); 
+        // CHANGED: Increased max length from 100 to 300 to visualize long throws
+        const len = Math.min(Math.sqrt(dx*dx + dy*dy), 300); 
         
         const arrowEndX = startX + Math.cos(angle) * len;
         const arrowEndY = startY + Math.sin(angle) * len;
@@ -529,14 +531,12 @@ function handleStart(x, y) {
 
 function handleMoveInput(x, y) {
     if (!isDragging) {
-        // Just hover logic for desktop mouse
         const pos = getMousePos(x, y);
         let hovered = currentNodes.find(n => Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS);
         if (hovered) { canvas.style.cursor = 'pointer'; hoverNode = hovered.id; }
         else { canvas.style.cursor = 'default'; hoverNode = -1; }
         return;
     }
-    // Update drag current for arrow drawing
     dragCurrent = getMousePos(x, y);
 }
 
@@ -549,61 +549,61 @@ function handleEnd(x, y) {
     const dy = pos.y - dragStart.y;
     const dist = Math.sqrt(dx*dx + dy*dy);
 
-    // THRESHOLD:
-    // If distance is very small (< 20px), treat as TAP/CLICK.
-    // If distance is larger, treat as SWIPE.
-    
     if (dist < 20) {
         // --- TAP LOGIC ---
-        // Find if we clicked ON a valid neighbor
         const validMoves = currentNodes[playerNode].neighbors;
         const clickedNode = validMoves.find(nid => {
             const n = currentNodes[nid];
             const d = Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2);
-            return d < HIT_RADIUS; // Generous hit radius for mobile taps
+            return d < HIT_RADIUS; 
         });
 
         if (clickedNode !== undefined) {
             handleMove(clickedNode);
         } else {
-            // Check if they tapped a non-neighbor node (Invalid Move)
             const anyNode = currentNodes.find(n => Math.sqrt((pos.x - n.x)**2 + (pos.y - n.y)**2) < HIT_RADIUS);
             if (anyNode && anyNode.id !== playerNode) showTooFarDialog();
         }
     } else {
-        // --- SWIPE LOGIC ---
+        // --- IMPROVED SWIPE LOGIC (Distance Sensitive) ---
         const swipeAngle = Math.atan2(dy, dx);
         
-        // Check all neighbors to see which one aligns with the swipe angle
-        let bestNeighbor = null;
-        let minAngleDiff = Math.PI / 4; // Tolerance: 45 degrees
+        // 1. Find all valid candidates within the angle cone (45 degrees)
+        const candidates = [];
+        const maxAngleDiff = Math.PI / 4; 
 
         currentNodes[playerNode].neighbors.forEach(nid => {
             const n = currentNodes[nid];
             const nx = n.x - currentNodes[playerNode].x;
             const ny = n.y - currentNodes[playerNode].y;
             const nAngle = Math.atan2(ny, nx);
+            const nDist = Math.sqrt(nx*nx + ny*ny);
             
-            // Calculate difference, normalizing to -PI to PI
             let diff = nAngle - swipeAngle;
             while (diff > Math.PI) diff -= 2*Math.PI;
             while (diff < -Math.PI) diff += 2*Math.PI;
             diff = Math.abs(diff);
 
-            if (diff < minAngleDiff) {
-                minAngleDiff = diff;
-                bestNeighbor = nid;
+            if (diff < maxAngleDiff) {
+                candidates.push({ id: nid, distance: nDist });
             }
         });
 
-        if (bestNeighbor !== null) {
-            handleMove(bestNeighbor);
+        if (candidates.length > 0) {
+            // 2. Sort candidates based on which one matches the DRAG DISTANCE best
+            // If user drags slightly (short), pick closest node.
+            // If user drags a lot (long), pick further node.
+            candidates.sort((a, b) => {
+                const diffA = Math.abs(a.distance - dist);
+                const diffB = Math.abs(b.distance - dist);
+                return diffA - diffB;
+            });
+            
+            handleMove(candidates[0].id);
         } else {
-            // Swipe was valid length but no path in that direction
             showTooFarDialog();
         }
     }
-    // Clear arrow immediately
     draw(); 
 }
 
@@ -624,7 +624,6 @@ canvas.addEventListener('touchmove', e => {
 
 canvas.addEventListener('touchend', e => {
     e.preventDefault();
-    // Use changedTouches for the end position
     handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
 }, { passive: false });
 
@@ -652,7 +651,7 @@ function showTooFarDialog() {
 // --- Updated Instructions with Swipe Logic ---
 const helpInstructions = `
     <p>🟡 <strong>Desktop:</strong> Tap to Move.</p>
-    <p>👆 <strong>Mobile:</strong> Swipe towards a red circle.</p>
+    <p>👆 <strong>Mobile:</strong> Swipe towards a red circle. (Swipe further for far nodes!)</p>
     <p>👹 Avoid Gian, Suneo, and Sensei.</p>
     <p>🧠 Trick them by looping!</p>
 `;
@@ -684,7 +683,6 @@ window.startGame = () => {
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     
-    // Inject instructions into the start screen for the first time
     document.querySelector('.instructions').innerHTML = helpInstructions;
 
     const startBtn = startScreen.querySelector('.big-btn');
@@ -705,7 +703,6 @@ function resetLevelState() { turn = 0; turnCount.innerText = 0; initAnimation();
 
 setupCanvas();
 initLevel(1);
-// Ensure instructions are set on load
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.instructions').innerHTML = helpInstructions;
     draw();
