@@ -437,7 +437,14 @@ function drawSprite(x, y, img, color) {
 }
 
 function draw() {
-    ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    // FIX: Clear the entire physical canvas to remove "ghost" arrows when drawing outside bounds
+    ctx.save(); 
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset to physical pixels
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear EVERYTHING
+    ctx.restore(); // Go back to game logic coordinates
+
+    // Removed the old limited clear: ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
     ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 14; ctx.strokeStyle = COLORS.road;
     currentNodes.forEach(n => {
         n.neighbors.forEach(nb => {
