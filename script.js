@@ -14,8 +14,8 @@ const LOGICAL_WIDTH = 950;
 const LOGICAL_HEIGHT = 650;
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 // Visual Settings - SHRUNK FOR MOBILE to prevent overlap
-const VISUAL_RADIUS = isMobile ? 22 : 24; // Nodes are smaller on mobile
-const HIT_RADIUS = isMobile ? 65 : 50;   // Keep hit area decent but not overlapping
+const VISUAL_RADIUS = isMobile ? 18 : 24; // Nodes are smaller on mobile
+const HIT_RADIUS = isMobile ? 40 : 50;   // Keep hit area decent but not overlapping
 const ANIMATION_SPEED = 0.15;
 const SHADOW_BLUR = isMobile ? 0 : 10;
 const SHADOW_OFFSET = isMobile ? 0 : 5;
@@ -520,40 +520,15 @@ function gameLoop() { if (isPlaying) { pulseFrame++; updateAnimations(); draw();
 
 function handleInput(clientX, clientY) {
     if (!isPlaying || isAnimating) return;
-    
     const pos = getMousePos(clientX, clientY);
-    const validMoveIds = currentNodes[playerNode].neighbors;
-
-    // FIND THE NEAREST NODE:
-    // Instead of just checking if we hit a node, we find the closest one 
-    // to where the user actually tapped.
-    let closestNode = null;
-    let minDistance = HIT_RADIUS; 
-
-    // We prioritize checking valid moves first for better UX
-    validMoveIds.forEach(id => {
-        const n = currentNodes[id];
-        const dist = Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2);
-        if (dist < minDistance) {
-            minDistance = dist;
-            closestNode = n;
-        }
-    });
-
-    // If we didn't tap near a valid move, check if we tapped near ANY node
-    // to trigger the "Too Far" dialog feedback
-    if (!closestNode) {
-        let anyNode = currentNodes.find(n => 
-            Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS
-        );
-        if (anyNode && anyNode.id !== playerNode) {
+    let clicked = currentNodes.find(n => Math.sqrt((pos.x - n.x) ** 2 + (pos.y - n.y) ** 2) < HIT_RADIUS);
+    if (clicked) {
+        if (currentNodes[playerNode].neighbors.includes(clicked.id)) {
+            handleMove(clicked.id);
+        } else if (clicked.id !== playerNode) {
             showTooFarDialog();
         }
-        return;
     }
-
-    // Process the move to the closest valid node
-    handleMove(closestNode.id);
 }
 
 canvas.addEventListener('mousemove', (e) => {
