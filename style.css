@@ -206,6 +206,9 @@ footer a {
   footer {
     display: none;
   }
+  footer a {
+        color: var(--accent-red);
+  }
 
   /* Horizontal Layout for Modals */
   .overlay-content {
