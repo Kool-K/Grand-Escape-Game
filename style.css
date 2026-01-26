@@ -362,7 +362,7 @@ footer a {
     color: rgba(255, 255, 255, 0.8);
   }
   footer a {
-    color: var(--accent-yellow);
+    color: var(--accent-red);
     font-weight: 700;
   }
 
