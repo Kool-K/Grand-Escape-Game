@@ -323,7 +323,7 @@ function showTooFarDialog() {
     window.dialogTimer = setTimeout(() => dialogBox.classList.add('hidden'), 1300);
 }
 
-const helpInstructions = `<p>💻 Desktop: Tap to Move.</p><p>👆 Mobile: Swipe towards a red circle. (Swipe further for far nodes!)</p><p>👹 Avoid Gian, Suneo, and Sensei.</p><p>🧠 Trick them by looping!</p><p>👹Warning: Level 1 villains follow set patrol routes. Level 2 villains use aggressive Pincer AI to hunt you!</p>`;
+const helpInstructions = `<p>💻 Desktop: Tap to Move.</p><p>👆 Mobile: Swipe towards a red circle.</p><p>👹 Avoid Gian, Suneo, and Sensei.</p><p>👹 Level 1 villains follow set patrol routes. Level 2 villains use aggressive Pincer AI to hunt you!</p>`;
 
 window.resumeGame = () => { startScreen.classList.add('hidden'); isPlaying = true; requestAnimationFrame(gameLoop); };
 window.startGame = () => {
